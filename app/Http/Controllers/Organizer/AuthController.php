@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Merchant;
+namespace App\Http\Controllers\Organizer;
 
 use App\Http\Controllers\Controller;
-use App\Services\Merchant\AuthService;
+use App\Services\Organizer\AuthService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -21,13 +21,13 @@ class AuthController extends Controller
     }
 
     /**
-     * Register a new merchant
+     * Register a new organizer
      */
     public function register(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:merchants',
+            'email' => 'required|string|email|max:255|unique:organizers',
             'password' => 'required|string|min:8|confirmed',
             'phone' => 'nullable|string|max:20',
             'business_name' => 'required|string|max:255',
@@ -49,7 +49,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Login merchant
+     * Login organizer
      */
     public function login(Request $request): JsonResponse
     {
@@ -72,7 +72,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Logout merchant
+     * Logout organizer
      */
     public function logout(): JsonResponse
     {
@@ -86,7 +86,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Get merchant profile
+     * Get organizer profile
      */
     public function profile(): JsonResponse
     {
@@ -100,7 +100,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Update merchant profile
+     * Get organizer profile
      */
     public function updateProfile(Request $request): JsonResponse
     {
@@ -126,7 +126,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Change merchant password
+     * Change organizer password
      */
     public function changePassword(Request $request): JsonResponse
     {

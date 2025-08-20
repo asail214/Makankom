@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class MerchantAuth
+class OrganizerAuth
 {
     use ApiResponse;
 
@@ -19,8 +19,8 @@ class MerchantAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::guard('merchant')->check()) {
-            return $this->unauthorized('Unauthorized. Merchant access required.');
+        if (!Auth::guard('organizer')->check()) {
+            return $this->unauthorized('Unauthorized. Organizer access required.');
         }
 
         return $next($request);

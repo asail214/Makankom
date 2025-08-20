@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class UserAuth
+class CustomerAuth
 {
     use ApiResponse;
 
@@ -19,8 +19,8 @@ class UserAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::guard('user')->check()) {
-            return $this->unauthorized('Unauthorized. User access required.');
+        if (!Auth::guard('customer')->check()) {
+            return $this->unauthorized('Unauthorized. Customer access required.');
         }
 
         return $next($request);

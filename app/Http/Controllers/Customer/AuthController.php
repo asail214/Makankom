@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\User;
+namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
-use App\Services\User\AuthService;
+use App\Services\Customer\AuthService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -21,13 +21,13 @@ class AuthController extends Controller
     }
 
     /**
-     * Register a new user
+     * Register a new customer
      */
     public function register(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|string|email|max:255|unique:customers',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -45,7 +45,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Login user
+     * Login customer
      */
     public function login(Request $request): JsonResponse
     {
@@ -68,7 +68,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Logout user
+     * Logout customer
      */
     public function logout(): JsonResponse
     {
@@ -82,7 +82,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Get user profile
+     * Get customer profile
      */
     public function profile(): JsonResponse
     {
@@ -96,7 +96,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Update user profile
+     * Update customer profile
      */
     public function updateProfile(Request $request): JsonResponse
     {
@@ -118,7 +118,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Change user password
+     * Change customer password
      */
     public function changePassword(Request $request): JsonResponse
     {

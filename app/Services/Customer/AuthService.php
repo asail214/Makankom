@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services\Merchant;
+namespace App\Services\Customer;
 
-use App\Models\Merchant;
+use App\Models\Customer;
 use App\Traits\ApiResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -13,57 +13,44 @@ class AuthService
     use ApiResponse;
 
     /**
-     * Register a new merchant
+     * Register a new customer
      */
     public function register(array $data): array
     {
         try {
-            $merchant = Merchant::create([
+            $customer = Customer::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
-                'phone' => $data['phone'] ?? null,
-                'business_name' => $data['business_name'],
-                'business_address' => $data['business_address'] ?? null,
-                'business_phone' => $data['business_phone'] ?? null,
-                'status' => 'pending',
             ]);
 
-            $token = $merchant->createToken('merchant-token')->plainTextToken;
+            $token = $customer->createToken('customer-token')->plainTextToken;
 
             return $this->successResponse([
-                'merchant' => $merchant,
+                'customer' => $customer,
                 'token' => $token,
-            ], 'Merchant registered successfully. Your account is pending approval.');
+            ], 'Customer registered successfully');
         } catch (\Exception $e) {
             return $this->errorResponse('Registration failed: ' . $e->getMessage());
         }
     }
 
     /**
-     * Login merchant
+     * Login customer
      */
     public function login(array $data): array
     {
         try {
-            $merchant = Merchant::where('email', $data['email'])->first();
+            $customer = Customer::where('email', $data['email'])->first();
 
-            if (!$merchant || !Hash::check($data['password'], $merchant->password)) {
+            if (!$customer || !Hash::check($data['password'], $customer->password)) {
                 return $this->errorResponse('The provided credentials are incorrect.');
             }
 
-            if ($merchant->status === 'inactive') {
-                return $this->errorResponse('Your account is inactive.');
-            }
-
-            if ($merchant->status === 'pending') {
-                return $this->errorResponse('Your account is pending approval.');
-            }
-
-            $token = $merchant->createToken('merchant-token')->plainTextToken;
+            $token = $customer->createToken('customer-token')->plainTextToken;
 
             return $this->successResponse([
-                'merchant' => $merchant,
+                'customer' => $customer,
                 'token' => $token,
             ], 'Login successful');
         } catch (\Exception $e) {
@@ -72,15 +59,15 @@ class AuthService
     }
 
     /**
-     * Logout merchant
+     * Logout customer
      */
     public function logout(): array
     {
         try {
-            $merchant = Auth::guard('merchant')->user();
+            $customer = Auth::guard('customer')->user();
             
-            if ($merchant) {
-                $merchant->tokens()->delete();
+            if ($customer) {
+                $customer->tokens()->delete();
             }
 
             return $this->successResponse(null, 'Logout successful');
@@ -90,60 +77,60 @@ class AuthService
     }
 
     /**
-     * Get merchant profile
+     * Get customer profile
      */
     public function profile(): array
     {
         try {
-            $merchant = Auth::guard('merchant')->user();
+            $customer = Auth::guard('customer')->user();
             
-            if (!$merchant) {
-                return $this->errorResponse('Merchant not found');
+            if (!$customer) {
+                return $this->errorResponse('Customer not found');
             }
 
-            return $this->successResponse($merchant, 'Profile retrieved successfully');
+            return $this->successResponse($customer, 'Profile retrieved successfully');
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to get profile: ' . $e->getMessage());
         }
     }
 
     /**
-     * Update merchant profile
+     * Update customer profile
      */
     public function updateProfile(array $data): array
     {
         try {
-            $merchant = Auth::guard('merchant')->user();
+            $customer = Auth::guard('customer')->user();
             
-            if (!$merchant) {
-                return $this->errorResponse('Merchant not found');
+            if (!$customer) {
+                return $this->errorResponse('Customer not found');
             }
 
-            $merchant->update($data);
+            $customer->update($data);
 
-            return $this->successResponse($merchant->fresh(), 'Profile updated successfully');
+            return $this->successResponse($customer->fresh(), 'Profile updated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse('Profile update failed: ' . $e->getMessage());
         }
     }
 
     /**
-     * Change merchant password
+     * Change customer password
      */
     public function changePassword(array $data): array
     {
         try {
-            $merchant = Auth::guard('merchant')->user();
-
-            if (!$merchant) {
-                return $this->errorResponse('Merchant not found');
+                        $customer = Auth::guard('customer')->user();
+            
+            if (!$customer) {
+                return $this->errorResponse('Customer not found');
             }
 
-            if (!Hash::check($data['current_password'], $merchant->password)) {
+            if (!Hash::check($data['current_password'], $customer->password)) {
                 return $this->errorResponse('The current password is incorrect.');
             }
 
-            $merchant->update([
+            $customer->update([
                 'password' => Hash::make($data['new_password']),
             ]);
 

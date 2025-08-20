@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Services\User;
+namespace App\Services\Organizer;
 
-use App\Models\User;
+use App\Models\Organizer;
 use App\Traits\ApiResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -13,44 +13,57 @@ class AuthService
     use ApiResponse;
 
     /**
-     * Register a new user
+     * Register a new organizer
      */
     public function register(array $data): array
     {
         try {
-            $user = User::create([
+            $organizer = Organizer::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
+                'phone' => $data['phone'] ?? null,
+                'business_name' => $data['business_name'],
+                'business_address' => $data['business_address'] ?? null,
+                'business_phone' => $data['business_phone'] ?? null,
+                'status' => 'pending',
             ]);
 
-            $token = $user->createToken('user-token')->plainTextToken;
+            $token = $organizer->createToken('organizer-token')->plainTextToken;
 
             return $this->successResponse([
-                'user' => $user,
+                'organizer' => $organizer,
                 'token' => $token,
-            ], 'User registered successfully');
+            ], 'Organizer registered successfully. Your account is pending approval.');
         } catch (\Exception $e) {
             return $this->errorResponse('Registration failed: ' . $e->getMessage());
         }
     }
 
     /**
-     * Login user
+     * Login organizer
      */
     public function login(array $data): array
     {
         try {
-            $user = User::where('email', $data['email'])->first();
+            $organizer = Organizer::where('email', $data['email'])->first();
 
-            if (!$user || !Hash::check($data['password'], $user->password)) {
+            if (!$organizer || !Hash::check($data['password'], $organizer->password)) {
                 return $this->errorResponse('The provided credentials are incorrect.');
             }
 
-            $token = $user->createToken('user-token')->plainTextToken;
+            if ($organizer->status === 'inactive') {
+                return $this->errorResponse('Your account is inactive.');
+            }
+
+            if ($organizer->status === 'pending') {
+                return $this->errorResponse('Your account is pending approval.');
+            }
+
+            $token = $organizer->createToken('organizer-token')->plainTextToken;
 
             return $this->successResponse([
-                'user' => $user,
+                'organizer' => $organizer,
                 'token' => $token,
             ], 'Login successful');
         } catch (\Exception $e) {
@@ -59,15 +72,15 @@ class AuthService
     }
 
     /**
-     * Logout user
+     * Logout organizer
      */
     public function logout(): array
     {
         try {
-            $user = Auth::guard('user')->user();
+            $organizer = Auth::guard('organizer')->user();
             
-            if ($user) {
-                $user->tokens()->delete();
+            if ($organizer) {
+                $organizer->tokens()->delete();
             }
 
             return $this->successResponse(null, 'Logout successful');
@@ -77,60 +90,60 @@ class AuthService
     }
 
     /**
-     * Get user profile
+     * Get organizer profile
      */
     public function profile(): array
     {
         try {
-            $user = Auth::guard('user')->user();
+            $organizer = Auth::guard('organizer')->user();
             
-            if (!$user) {
-                return $this->errorResponse('User not found');
+            if (!$organizer) {
+                return $this->errorResponse('Organizer not found');
             }
 
-            return $this->successResponse($user, 'Profile retrieved successfully');
+            return $this->successResponse($organizer, 'Profile retrieved successfully');
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to get profile: ' . $e->getMessage());
         }
     }
 
     /**
-     * Update user profile
+     * Update organizer profile
      */
     public function updateProfile(array $data): array
     {
         try {
-            $user = Auth::guard('user')->user();
+            $organizer = Auth::guard('organizer')->user();
             
-            if (!$user) {
-                return $this->errorResponse('User not found');
+            if (!$organizer) {
+                return $this->errorResponse('Organizer not found');
             }
 
-            $user->update($data);
+            $organizer->update($data);
 
-            return $this->successResponse($user->fresh(), 'Profile updated successfully');
+            return $this->successResponse($organizer->fresh(), 'Profile updated successfully');
         } catch (\Exception $e) {
             return $this->errorResponse('Profile update failed: ' . $e->getMessage());
         }
     }
 
     /**
-     * Change user password
+     * Change organizer password
      */
     public function changePassword(array $data): array
     {
         try {
-            $user = Auth::guard('user')->user();
+            $organizer = Auth::guard('organizer')->user();
 
-            if (!$user) {
-                return $this->errorResponse('User not found');
+            if (!$organizer) {
+                return $this->errorResponse('Organizer not found');
             }
 
-            if (!Hash::check($data['current_password'], $user->password)) {
+            if (!Hash::check($data['current_password'], $organizer->password)) {
                 return $this->errorResponse('The current password is incorrect.');
             }
 
-            $user->update([
+            $organizer->update([
                 'password' => Hash::make($data['new_password']),
             ]);
 

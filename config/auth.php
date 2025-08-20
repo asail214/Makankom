@@ -40,17 +40,17 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
-        'user' => [
+        'customer' => [
             'driver' => 'sanctum',
-            'provider' => 'users',
+            'provider' => 'customers',
         ],
         'admin' => [
             'driver' => 'sanctum',
             'provider' => 'admins',
         ],
-        'merchant' => [
+        'organizer' => [
             'driver' => 'sanctum',
-            'provider' => 'merchants',
+            'provider' => 'organizers',
         ],
         'scan_point' => [
             'driver' => 'sanctum',
@@ -76,17 +76,17 @@ return [
     */
 
     'providers' => [
-        'users' => [
+        'customers' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL', App\Models\User::class),
+            'model' => env('AUTH_MODEL', App\Models\Customer::class),
         ],
         'admins' => [
             'driver' => 'eloquent',
             'model' => App\Models\Admin::class,
         ],
-        'merchants' => [
+        'organizers' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Merchant::class,
+            'model' => App\Models\Organizer::class,
         ],
         'scan_points' => [
             'driver' => 'eloquent',
@@ -119,8 +119,8 @@ return [
     */
 
     'passwords' => [
-        'users' => [
-            'provider' => 'users',
+        'customers' => [
+            'provider' => 'customers',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
             'expire' => 60,
             'throttle' => 60,
@@ -131,8 +131,8 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
-        'merchants' => [
-            'provider' => 'merchants',
+        'organizers' => [
+            'provider' => 'organizers',
             'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,

@@ -3,8 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
-use App\Http\Controllers\Merchant\AuthController as MerchantAuthController;
-use App\Http\Controllers\User\AuthController as UserAuthController;
+use App\Http\Controllers\Organizer\AuthController as OrganizerAuthController;
+use App\Http\Controllers\Customer\AuthController as CustomerAuthController;
 use App\Http\Controllers\ScanPoint\AuthController as ScanPointAuthController;
 
 /*
@@ -35,29 +35,29 @@ Route::prefix('admin')->group(function () {
     });
 });
 
-// Merchant Authentication Routes
-Route::prefix('merchant')->group(function () {
-    Route::post('/register', [MerchantAuthController::class, 'register']);
-    Route::post('/login', [MerchantAuthController::class, 'login']);
+// Organizer Authentication Routes
+Route::prefix('organizer')->group(function () {
+    Route::post('/register', [OrganizerAuthController::class, 'register']);
+    Route::post('/login', [OrganizerAuthController::class, 'login']);
     
-    Route::middleware('auth:merchant')->group(function () {
-        Route::post('/logout', [MerchantAuthController::class, 'logout']);
-        Route::get('/profile', [MerchantAuthController::class, 'profile']);
-        Route::put('/profile', [MerchantAuthController::class, 'updateProfile']);
-        Route::post('/change-password', [MerchantAuthController::class, 'changePassword']);
+    Route::middleware('auth:organizer')->group(function () {
+        Route::post('/logout', [OrganizerAuthController::class, 'logout']);
+        Route::get('/profile', [OrganizerAuthController::class, 'profile']);
+        Route::put('/profile', [OrganizerAuthController::class, 'updateProfile']);
+        Route::post('/change-password', [OrganizerAuthController::class, 'changePassword']);
     });
 });
 
-// User Authentication Routes
-Route::prefix('user')->group(function () {
-    Route::post('/register', [UserAuthController::class, 'register']);
-    Route::post('/login', [UserAuthController::class, 'login']);
+// Customer Authentication Routes
+Route::prefix('customer')->group(function () {
+    Route::post('/register', [CustomerAuthController::class, 'register']);
+    Route::post('/login', [CustomerAuthController::class, 'login']);
     
-    Route::middleware('auth:user')->group(function () {
-        Route::post('/logout', [UserAuthController::class, 'logout']);
-        Route::get('/profile', [UserAuthController::class, 'profile']);
-        Route::put('/profile', [UserAuthController::class, 'updateProfile']);
-        Route::post('/change-password', [UserAuthController::class, 'changePassword']);
+    Route::middleware('auth:customer')->group(function () {
+        Route::post('/logout', [CustomerAuthController::class, 'logout']);
+        Route::get('/profile', [CustomerAuthController::class, 'profile']);
+        Route::put('/profile', [CustomerAuthController::class, 'updateProfile']);
+        Route::post('/change-password', [CustomerAuthController::class, 'changePassword']);
     });
 });
 
