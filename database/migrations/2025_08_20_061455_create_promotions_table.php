@@ -25,7 +25,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->json('applicable_events')->nullable();
             $table->json('applicable_ticket_types')->nullable();
-            $table->decimal('minimum_order_amount')->nullable();
+            $table->decimal('minimum_order_amount', 10, 2)->nullable();
             $table->timestamps();
             
             $table->index(['code', 'is_active']);

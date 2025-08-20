@@ -15,7 +15,6 @@ return new class extends Migration
             $table->foreignId('event_id')->nullable()->constrained('events')->onDelete('cascade')->after('status');
             $table->string('device_information')->nullable()->after('event_id');
             $table->string('location_details')->nullable()->after('device_information');
-            $table->boolean('is_active')->default(true)->after('location_details');
         });
     }
 
@@ -26,7 +25,7 @@ return new class extends Migration
     {
         Schema::table('scan_points', function (Blueprint $table) {
             $table->dropForeign(['event_id']);
-            $table->dropColumn(['event_id', 'device_information', 'location_details', 'is_active']);
+            $table->dropColumn(['event_id', 'device_information', 'location_details']);
         });
     }
 };
