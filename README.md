@@ -1,61 +1,480 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Makankom - Event Ticketing Platform 🎫
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+<div align="center">
 
-## About Laravel
+[![Laravel](https://img.shields.io/badge/Laravel-12.x-red.svg)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.2+-blue.svg)](https://php.net)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0+-orange.svg)](https://mysql.com)
+[![License](https://img.shields.io/badge/License-Proprietary-yellow.svg)]()
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**A comprehensive dual-language event management and ticketing platform for Oman**
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+[Features](#features) • [Installation](#installation) • [API Documentation](#api-documentation) • [Contributing](#contributing)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+</div>
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 📋 Table of Contents
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- [About The Project](#about-the-project)
+- [Features](#features)
+- [Technology Stack](#technology-stack)
+- [System Architecture](#system-architecture)
+- [User Roles](#user-roles)
+- [Project Progress](#project-progress)
+- [Installation](#installation)
+- [API Reference](#api-reference)
+- [Database Schema](#database-schema)
+- [Testing](#testing)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+- [License](#license)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## 🌟 About The Project
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Makankom is a sophisticated event management and ticketing platform designed specifically for the Oman market. The platform bridges the gap between event organizers and attendees, providing a seamless experience for discovering, booking, and attending various events - both physical and virtual.
 
-### Premium Partners
+### Key Highlights
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- **🌐 Dual Language Support**: Complete Arabic (RTL) and English (LTR) interfaces
+- **🔐 Multi-Role System**: Four distinct user types with specialized functionalities
+- **💳 Payment Integration**: Thawani and AmwalPay gateway support
+- **📱 Mobile-Ready**: API-first architecture supporting web and mobile clients
+- **🎯 Event Lifecycle**: Complete management from creation to ticket scanning
+- **📊 Analytics**: Comprehensive reporting and insights
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## ✨ Features
 
-## Code of Conduct
+### 🎭 For Customers
+- [x] Event discovery with advanced filtering
+- [x] Multi-gateway payment processing
+- [x] Digital ticket management with QR codes
+- [x] Wishlist and purchase history
+- [x] Social sharing capabilities
+- [ ] Event reviews and ratings (v1.1)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 🏢 For Organizers
+- [x] Event creation and management
+- [x] Multiple ticket type configurations
+- [x] Sales analytics and reporting
+- [x] Brand management
+- [x] Scan point administration
+- [ ] Marketing tools and promotions (v1.1)
 
-## Security Vulnerabilities
+### 👨‍💼 For Administrators
+- [x] Event approval workflow
+- [x] User management and verification
+- [x] Platform content moderation
+- [x] Financial reporting
+- [x] System configuration
+- [ ] Advanced analytics dashboard (v1.1)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 📱 For Scan Points
+- [x] Real-time ticket validation
+- [x] QR code scanning interface
+- [x] Offline scanning with sync
+- [x] Attendance tracking
+- [x] Entry statistics
 
-## License
+---
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 🛠 Technology Stack
+
+### Backend
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| **Laravel** | 12.x | Main framework |
+| **PHP** | 8.2+ | Server-side language |
+| **MySQL** | 8.0+ | Primary database |
+| **Redis** | 6.0+ | Caching & sessions |
+| **Sanctum** | 4.x | API authentication |
+
+### Development Tools
+| Tool | Purpose |
+|------|---------|
+| **Composer** | PHP dependency management |
+| **NPM** | Frontend asset management |
+| **Vite** | Asset bundling |
+| **PHPUnit** | Testing framework |
+
+---
+
+## 🏗 System Architecture
+
+```mermaid
+graph TB
+    A[Frontend Apps] --> B[API Gateway]
+    B --> C[Laravel Application]
+    C --> D[Authentication Layer]
+    C --> E[Business Logic]
+    C --> F[Database Layer]
+    
+    D --> G[Multi-Guard System]
+    E --> H[Event Management]
+    E --> I[Payment Processing]
+    E --> J[Ticket System]
+    F --> K[MySQL Database]
+    F --> L[Redis Cache]
+```
+
+### API Architecture
+- **RESTful Design**: Consistent endpoint patterns
+- **Token Authentication**: JWT-based security
+- **Multi-Guard System**: Role-based access control
+- **Standardized Responses**: Uniform JSON structure
+- **Rate Limiting**: Protection against abuse
+
+---
+
+## 👥 User Roles
+
+<table>
+<tr>
+<td width="25%">
+
+### 🛍 Customer
+- Browse events
+- Purchase tickets
+- Manage profile
+- View history
+- Wishlist items
+
+</td>
+<td width="25%">
+
+### 🏢 Organizer
+- Create events
+- Manage tickets
+- View analytics
+- Upload media
+- Control access
+
+</td>
+<td width="25%">
+
+### 👨‍💼 Admin
+- Approve content
+- Manage users
+- Platform settings
+- View reports
+- Moderate system
+
+</td>
+<td width="25%">
+
+### 📱 Scan Point
+- Validate tickets
+- Scan QR codes
+- Track attendance
+- Generate reports
+- Offline support
+
+</td>
+</tr>
+</table>
+
+---
+
+## 📊 Project Progress
+
+<div align="center">
+
+### Overall Completion: **85%**
+
+</div>
+
+#### ✅ Completed (100%)
+- Database schema and migrations
+- Authentication system (all user types)
+- Core API endpoints
+- File upload system
+- Email notification system
+
+#### 🔄 In Progress (60-90%)
+- Event management (95%)
+- Order processing (90%)
+- Ticket system (95%)
+- Admin features (85%)
+- Payment integration (60%)
+
+#### ⏳ Pending (0-30%)
+- Comprehensive testing (30%)
+- API rate limiting (0%)
+- Production configuration (20%)
+- API documentation (10%)
+
+---
+
+## 🚀 Installation
+
+### Prerequisites
+
+Ensure you have the following installed:
+
+```bash
+PHP >= 8.2
+Composer >= 2.0
+Node.js >= 18.0
+MySQL >= 8.0
+```
+
+### Quick Start
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/makankom.git
+   cd makankom
+   ```
+
+2. **Install dependencies**
+   ```bash
+   composer install
+   npm install
+   ```
+
+3. **Environment setup**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+4. **Database configuration**
+   
+   Edit `.env` file:
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=makankom_app_2
+   DB_USERNAME=your_username
+   DB_PASSWORD=your_password
+   ```
+
+5. **Database migration**
+   ```bash
+   php artisan migrate
+   php artisan db:seed  # Optional: sample data
+   ```
+
+6. **Storage setup**
+   ```bash
+   php artisan storage:link
+   chmod -R 775 storage bootstrap/cache
+   ```
+
+7. **Asset compilation**
+   ```bash
+   npm run build  # Production
+   npm run dev    # Development
+   ```
+
+8. **Start development server**
+   ```bash
+   php artisan serve
+   ```
+
+### 🌐 Access URLs
+
+- **Application**: http://localhost:8000
+- **API Base**: http://localhost:8000/api/
+- **API Documentation**: http://localhost:8000/api/documentation
+
+---
+
+## 📚 API Reference
+
+### Authentication Endpoints
+
+#### Customer Authentication
+```http
+POST /api/customer/register
+POST /api/customer/login
+POST /api/customer/logout
+```
+
+#### Organizer Authentication
+```http
+POST /api/organizer/register
+POST /api/organizer/login
+POST /api/organizer/logout
+```
+
+### Core Endpoints
+
+#### Public Events
+```http
+GET    /api/v1/events              # List events
+GET    /api/v1/events/{id}         # Event details
+GET    /api/v1/event-categories    # Categories
+```
+
+#### Customer Features
+```http
+GET    /api/customer/orders        # Order history
+POST   /api/customer/orders        # Create order
+GET    /api/customer/tickets       # My tickets
+POST   /api/customer/wishlist      # Add to wishlist
+```
+
+### Sample Request
+
+```bash
+curl -X POST http://localhost:8000/api/customer/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "first_name": "John",
+    "last_name": "Doe", 
+    "email": "john@example.com",
+    "password": "password123",
+    "password_confirmation": "password123"
+  }'
+```
+
+### Response Format
+
+```json
+{
+  "success": true,
+  "message": "Customer registered successfully",
+  "data": {
+    "customer": { ... },
+    "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9..."
+  }
+}
+```
+
+---
+
+## 🗄 Database Schema
+
+### Core Tables
+
+| Table | Purpose | Relations |
+|-------|---------|-----------|
+| `customers` | Customer accounts | → orders, tickets, wishlists |
+| `organizers` | Event organizers | → events, brands |
+| `events` | Event information | → tickets, orders |
+| `orders` | Purchase records | → order_items, payments |
+| `tickets` | Digital tickets | → ticket_scans |
+
+### Relationships Overview
+
+```
+customers (1) ──→ (n) orders ──→ (n) order_items
+                     ↓
+events (1) ──→ (n) ticket_types ──→ (n) tickets
+    ↓
+organizers (1) ──→ (n) brands
+```
+
+---
+
+## 🧪 Testing
+
+### Run Test Suite
+
+```bash
+# All tests
+php artisan test
+
+# Specific test file
+php artisan test tests/Feature/API/AuthenticationTest.php
+
+# With coverage
+php artisan test --coverage
+```
+
+### Test Categories
+
+- **Feature Tests**: API endpoint testing
+- **Unit Tests**: Service and model testing
+- **Integration Tests**: External service testing
+
+---
+
+## 🚀 Deployment
+
+### Production Checklist
+
+- [ ] Environment variables configured
+- [ ] SSL certificates installed
+- [ ] Redis cache configured
+- [ ] Queue workers running
+- [ ] Database backups automated
+- [ ] Monitoring tools setup
+- [ ] Error tracking enabled
+
+### Environment Configuration
+
+```env
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://yourdomain.com
+
+DB_CONNECTION=mysql
+CACHE_DRIVER=redis
+QUEUE_CONNECTION=redis
+
+MAIL_MAILER=smtp
+PAYMENTS_ENABLED=true
+```
+
+---
+
+## 🤝 Contributing
+
+### Development Workflow
+
+1. **Fork** the repository
+2. **Create** feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
+
+### Code Standards
+
+- Follow **PSR-12** coding standards
+- Write **comprehensive tests** for new features
+- Update **documentation** for API changes
+- Use **meaningful commit messages**
+
+### Development Setup
+
+```bash
+# Install development dependencies
+composer install --dev
+npm install
+
+# Run code style checks
+./vendor/bin/pint
+
+# Run tests before committing
+php artisan test
+```
+
+---
+
+## 📝 License
+
+This project is proprietary software. All rights reserved.
+
+---
+
+## 📞 Contact & Support
+
+<div align="center">
+
+**Developer**: Mr. Khalfan Alamri  
+**Email**: support@makankom.om  
+**Project**: [GitHub Repository](https://github.com/yourusername/makankom)
+
+---
+
+<sub>Built with ❤️ for the Oman event community</sub>
+
+</div>
