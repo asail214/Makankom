@@ -19,9 +19,23 @@ class Customer extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
         'password',
+        'gender',
+        'date_of_birth',
+        'phone',
+        'profile_picture',
+        'address',
+        'city',
+        'state',
+        'country',
+        'postal_code',
+        'status',
+        'last_login_at',
+        'preferred_language',
+        'notification_preferences',
     ];
 
     /**
@@ -44,6 +58,9 @@ class Customer extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'date_of_birth' => 'date',
+            'last_login_at' => 'datetime',
+            'notification_preferences' => 'array',
         ];
     }
 
@@ -53,5 +70,21 @@ class Customer extends Authenticatable
     public function getGuardName(): string
     {
         return 'customer';
+    }
+
+    // Relationships
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
     }
 }

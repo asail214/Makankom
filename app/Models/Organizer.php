@@ -26,6 +26,11 @@ class Organizer extends Authenticatable
         'business_phone',
         'status',
         'email_verified_at',
+        'type',
+        'cr_number',
+        'approved_by',
+        'approved_at',
+        'rejection_reason',
     ];
 
     /**
@@ -46,6 +51,7 @@ class Organizer extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'approved_at' => 'datetime',
     ];
 
     /**
@@ -54,5 +60,16 @@ class Organizer extends Authenticatable
     public function getGuardName(): string
     {
         return 'organizer';
+    }
+
+    // Relationships
+    public function events()
+    {
+        return $this->hasMany(Event::class);
+    }
+
+    public function brands()
+    {
+        return $this->hasMany(Brand::class);
     }
 }

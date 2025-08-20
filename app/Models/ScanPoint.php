@@ -20,6 +20,9 @@ class ScanPoint extends Authenticatable
         'location',
         'description',
         'status',
+        'event_id',
+        'device_information',
+        'location_details',
     ];
 
     /**
@@ -37,5 +40,16 @@ class ScanPoint extends Authenticatable
     public function getGuardName(): string
     {
         return 'scan_point';
+    }
+
+    // Relationships
+    public function event()
+    {
+        return $this->belongsTo(Event::class);
+    }
+
+    public function ticketScans()
+    {
+        return $this->hasMany(\App\Models\TicketScan::class);
     }
 }
