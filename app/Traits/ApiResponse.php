@@ -3,14 +3,17 @@
 namespace App\Traits;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 trait ApiResponse
 {
     /**
-     * Success response
+     * Success response with logging
      */
     protected function successResponse($data = null, string $message = 'Success', int $code = 200): array
     {
+        $this->logApiResponse('success', $message, $code);
+        
         return [
             'success' => true,
             'message' => $message,
@@ -19,10 +22,12 @@ trait ApiResponse
     }
 
     /**
-     * Error response
+     * Error response with logging
      */
     protected function errorResponse(string $message = 'Error', $errors = null, int $code = 400): array
     {
+        $this->logApiResponse('error', $message, $code, $errors);
+        
         $response = [
             'success' => false,
             'message' => $message,
@@ -96,4 +101,31 @@ trait ApiResponse
     {
         return $this->jsonError($message, null, 500);
     }
-} 
+
+    /**
+     * Log API responses for monitoring
+     */
+    private function logApiResponse(string $type, string $message, int $code, $errors = null): void
+    {
+        $context = [
+            'type' => $type,
+            'status_code' => $code,
+            'url' => request()->fullUrl(),
+            'method' => request()->method(),
+            'user_id' => auth()->id(),
+            'ip' => request()->ip(),
+        ];
+
+        if ($errors) {
+            $context['errors'] = $errors;
+        }
+
+        if ($type === 'error' && $code >= 500) {
+            Log::error("API Error: {$message}", $context);
+        } elseif ($type === 'error') {
+            Log::warning("API Warning: {$message}", $context);
+        } else {
+            Log::info("API Success: {$message}", $context);
+        }
+    }
+}

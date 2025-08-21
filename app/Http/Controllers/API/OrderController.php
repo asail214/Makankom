@@ -35,59 +35,93 @@ class OrderController extends Controller
         if (!$customer) {
             return $this->unauthorized();
         }
-
-        $validated = $request->validate([
-            'event_id' => ['required', 'integer', 'exists:events,id'],
-            'items' => ['required', 'array', 'min:1'],
-            'items.*.ticket_type_id' => ['required', 'integer', 'exists:ticket_types,id'],
-            'items.*.quantity' => ['required', 'integer', 'min:1'],
-        ]);
-
-        $order = DB::transaction(function () use ($customer, $validated) {
-            $order = new Order([
-                'order_number' => strtoupper(uniqid('ORD')),
+    
+        try {
+            $validated = $request->validate([
+                'event_id' => ['required', 'integer', 'exists:events,id'],
+                'items' => ['required', 'array', 'min:1'],
+                'items.*.ticket_type_id' => ['required', 'integer', 'exists:ticket_types,id'],
+                'items.*.quantity' => ['required', 'integer', 'min:1'],
+            ]);
+    
+            Log::channel('business_logic')->info('Order creation started', [
                 'customer_id' => $customer->id,
                 'event_id' => $validated['event_id'],
-                'subtotal' => 0,
-                'tax_amount' => 0,
-                'discount_amount' => 0,
-                'total_amount' => 0,
-                'status' => 'pending',
+                'items_count' => count($validated['items'])
             ]);
-            $order->save();
-
-            $subtotal = 0;
-            foreach ($validated['items'] as $line) {
-                $ticketType = TicketType::lockForUpdate()->findOrFail($line['ticket_type_id']);
-                if ($ticketType->event_id !== (int) $validated['event_id']) {
-                    abort(422, 'Ticket type does not belong to the selected event');
-                }
-                if (!$ticketType->canPurchase($line['quantity'])) {
-                    abort(422, 'Requested quantity not available for '.$ticketType->name);
-                }
-                $ticketType->reserveQuantity($line['quantity']);
-
-                $unitPrice = (float) $ticketType->price;
-                $totalPrice = $unitPrice * (int) $line['quantity'];
-                $subtotal += $totalPrice;
-
-                OrderItem::create([
-                    'order_id' => $order->id,
-                    'ticket_type_id' => $ticketType->id,
-                    'quantity' => (int) $line['quantity'],
-                    'unit_price' => $unitPrice,
-                    'total_price' => $totalPrice,
+    
+            $order = DB::transaction(function () use ($customer, $validated) {
+                $order = new Order([
+                    'order_number' => strtoupper(uniqid('ORD')),
+                    'customer_id' => $customer->id,
+                    'event_id' => $validated['event_id'],
+                    'subtotal' => 0,
+                    'tax_amount' => 0,
+                    'discount_amount' => 0,
+                    'total_amount' => 0,
+                    'status' => 'pending',
                 ]);
-            }
-
-            $order->subtotal = $subtotal;
-            $order->total_amount = $subtotal; // apply discounts/tax later
-            $order->save();
-
-            return $order->fresh(['orderItems.ticketType']);
-        });
-
-        return $this->jsonSuccess($order, 'Order created', 201);
+                $order->save();
+    
+                $subtotal = 0;
+                foreach ($validated['items'] as $line) {
+                    $ticketType = TicketType::lockForUpdate()->findOrFail($line['ticket_type_id']);
+                    
+                    if ($ticketType->event_id !== (int) $validated['event_id']) {
+                        throw new BusinessLogicException(
+                            'Ticket type does not belong to the selected event',
+                            'TICKET_TYPE_MISMATCH',
+                            422
+                        );
+                    }
+                    
+                    if (!$ticketType->canPurchase($line['quantity'])) {
+                        throw BusinessLogicException::ticketNotAvailable();
+                    }
+                    
+                    $ticketType->reserveQuantity($line['quantity']);
+    
+                    $unitPrice = (float) $ticketType->price;
+                    $totalPrice = $unitPrice * (int) $line['quantity'];
+                    $subtotal += $totalPrice;
+    
+                    OrderItem::create([
+                        'order_id' => $order->id,
+                        'ticket_type_id' => $ticketType->id,
+                        'quantity' => (int) $line['quantity'],
+                        'unit_price' => $unitPrice,
+                        'total_price' => $totalPrice,
+                    ]);
+                }
+    
+                $order->subtotal = $subtotal;
+                $order->total_amount = $subtotal;
+                $order->save();
+    
+                return $order->fresh(['orderItems.ticketType']);
+            });
+    
+            Log::channel('business_logic')->info('Order created successfully', [
+                'order_id' => $order->id,
+                'order_number' => $order->order_number,
+                'total_amount' => $order->total_amount
+            ]);
+    
+            return $this->jsonSuccess($order, 'Order created', 201);
+    
+        } catch (ValidationException $e) {
+            return $this->validationError($e->errors());
+        } catch (BusinessLogicException $e) {
+            return $e->render();
+        } catch (\Exception $e) {
+            Log::channel('api')->error('Order creation failed', [
+                'customer_id' => $customer->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return $this->serverError('Failed to create order');
+        }
     }
 
     public function show(Order $order)
