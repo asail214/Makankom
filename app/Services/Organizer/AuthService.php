@@ -23,9 +23,10 @@ class AuthService
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
                 'phone' => $data['phone'] ?? null,
-                'business_name' => $data['business_name'],
-                'business_address' => $data['business_address'] ?? null,
-                'business_phone' => $data['business_phone'] ?? null,
+                'type' => $data['type'],
+                'profile_img_url' => $data['profile_img_url'] ?? null,
+                'cr_number' => $data['cr_number'] ?? null,
+                'cr_document_path' => null,
                 'status' => 'pending',
             ]);
 
@@ -34,7 +35,7 @@ class AuthService
             return $this->successResponse([
                 'organizer' => $organizer,
                 'token' => $token,
-            ], 'Organizer registered successfully. Your account is pending approval.');
+            ], 'Organizer registered successfully. Your account is pending verification.');
         } catch (\Exception $e) {
             return $this->errorResponse('Registration failed: ' . $e->getMessage());
         }

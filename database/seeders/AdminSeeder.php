@@ -18,7 +18,14 @@ class AdminSeeder extends Seeder
                 'status' => 'active',
             ]
         );
+
+        Admin::updateOrCreate(
+            ['email' => 'admin2@example.com'],
+            [
+                'name' => 'System Admin',
+                'password' => Hash::make('password'),
+                'status' => 'active',
+            ]
+        );
     }
 }
-
-

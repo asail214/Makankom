@@ -14,13 +14,16 @@ return new class extends Migration
         Schema::create('organizers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->enum('type', ['individual', 'company', 'government', 'ngo'])->default('individual');
+            $table->string('profile_img_url')->nullable();
+            $table->string('cr_number')->nullable();
             $table->string('email')->unique();
-            $table->string('password');
-            $table->string('phone')->nullable();
-            $table->string('business_name');
-            $table->string('business_address')->nullable();
-            $table->string('business_phone')->nullable();
-            $table->enum('status', ['active', 'inactive', 'pending'])->default('pending');
+            $table->string('phone')->nullable()->unique();
+            $table->string('password'); // password_hash in ERD
+            $table->enum('status', ['pending', 'verified', 'rejected'])->default('pending');
+            $table->json('cr_document_path')->nullable();
+            $table->foreignId('approved_by')->nullable()->constrained('admins')->onDelete('set null');
+            $table->timestamp('approved_at')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->rememberToken();
             $table->timestamps();

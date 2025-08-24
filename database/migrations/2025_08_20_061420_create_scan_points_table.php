@@ -6,24 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('scan_points', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('location')->nullable();
-            $table->string('description')->nullable();
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->string('label'); // ERD uses 'label' not 'name'
+            $table->foreignId('event_id')->constrained('events')->onDelete('cascade'); // Required in ERD
+            $table->string('device_information')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('scan_points');

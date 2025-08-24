@@ -16,15 +16,19 @@ class EventSeeder extends Seeder
     {
         $organizer = Organizer::firstOrCreate(
             ['email' => 'organizer@example.com'],
-            ['name' => 'Demo Organizer', 'password' => bcrypt('password'), 'status' => 'active']
+            [
+                'name' => 'Demo Organizer', 
+                'password' => bcrypt('password'), 
+                'status' => 'verified', // Use ERD enum value
+                'type' => 'company'
+            ]
         );
 
         $brand = Brand::firstOrCreate([
-            'slug' => 'demo-brand',
-        ], [
-            'organizer_id' => $organizer->id,
             'name' => 'Demo Brand',
-            'is_active' => true,
+            'organizer_id' => $organizer->id,
+        ], [
+            'logo' => 'https://example.com/logos/demo-brand.png',
         ]);
 
         $category = EventCategory::first();
@@ -43,12 +47,12 @@ class EventSeeder extends Seeder
                 'brand_id' => $brand->id,
                 'category_id' => $category->id,
                 'title' => 'Demo Event',
-                'description' => 'A sample seeded event.',
-                'short_description' => 'Sample',
+                'description' => 'A sample seeded event for testing purposes.',
+                'short_description' => 'Sample demo event',
                 'start_date' => now()->addDays(7),
                 'end_date' => now()->addDays(7)->addHours(3),
-                'venue_name' => 'Demo Venue',
-                'venue_address' => '123 Demo Street',
+                'venue_name' => 'Muscat Convention Center',
+                'venue_address' => '123 Al Khuwair Street, Muscat, Oman',
                 'status' => 'published',
                 'is_approved' => true,
                 'approved_at' => now(),
@@ -57,5 +61,3 @@ class EventSeeder extends Seeder
         );
     }
 }
-
-

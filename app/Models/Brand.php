@@ -11,17 +11,11 @@ class Brand extends Model
 {
     use HasFactory;
 
+    // Only fields from ERD schema
     protected $fillable = [
         'organizer_id',
         'name',
-        'slug',
-        'description',
         'logo',
-        'website',
-        'email',
-        'phone',
-        'address',
-        'is_active',
     ];
 
     public function events(): HasMany
@@ -31,9 +25,6 @@ class Brand extends Model
 
     public function organizer(): BelongsTo
     {
-        // Requires brands.organizer_id (FK) to exist
         return $this->belongsTo(Organizer::class);
     }
 }
-
-

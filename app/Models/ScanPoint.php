@@ -10,33 +10,16 @@ class ScanPoint extends Authenticatable
 {
     use HasApiTokens, HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
-        'name',
-        'location',
-        'description',
-        'status',
+        'label',
         'event_id',
         'device_information',
-        'location_details',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'remember_token',
     ];
 
-    /**
-     * Get the guard name for the model.
-     */
     public function getGuardName(): string
     {
         return 'scan_point';
@@ -50,6 +33,6 @@ class ScanPoint extends Authenticatable
 
     public function ticketScans()
     {
-        return $this->hasMany(\App\Models\TicketScan::class);
+        return $this->hasMany(TicketScan::class);
     }
 }

@@ -23,16 +23,16 @@ class AuthController extends Controller
     /**
      * Register a new organizer
      */
-    public function register(Request $request): JsonResponse
+public function register(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:organizers',
             'password' => 'required|string|min:8|confirmed',
-            'phone' => 'nullable|string|max:20',
-            'business_name' => 'required|string|max:255',
-            'business_address' => 'nullable|string|max:500',
-            'business_phone' => 'nullable|string|max:20',
+            'phone' => 'nullable|string|max:20|unique:organizers',
+            'type' => 'required|in:individual,company,government,ngo',
+            'cr_number' => 'nullable|string|max:50',
+            'profile_img_url' => 'nullable|url',
         ]);
 
         if ($validator->fails()) {
