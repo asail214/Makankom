@@ -30,14 +30,13 @@ class AuthController extends Controller
             'last_name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:customers',
             'password' => 'required|string|min:8|confirmed',
-            'phone' => 'nullable|string|max:20|unique:customers',
+            'phone' => 'nullable|string|max:8|unique:customers',
             'date_of_birth' => 'nullable|date|before:today',
-            'gender' => 'nullable|in:male,female,other',
+            'gender' => 'nullable|in:male,female',
             'address' => 'nullable|string|max:500',
             'city' => 'nullable|string|max:100',
             'state' => 'nullable|string|max:100',
             'country' => 'nullable|string|max:100',
-            'postal_code' => 'nullable|string|max:20',
             'preferred_language' => 'nullable|string|in:en,ar',
         ]);
 
