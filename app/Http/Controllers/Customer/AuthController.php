@@ -26,8 +26,7 @@ class AuthController extends Controller
     public function register(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
+            'full_name' => 'required|string|max:300',
             'email' => 'required|string|email|max:255|unique:customers',
             'password' => 'required|string|min:8|confirmed',
             'phone' => 'nullable|string|max:8|unique:customers',
@@ -44,7 +43,22 @@ class AuthController extends Controller
             return $this->validationError($validator->errors());
         }
 
-        $result = $this->authService->register($request->all());
+        // Split full_name into first_name and last_name
+        $fullName = trim($request->full_name);
+        $nameParts = explode(' ', $fullName, 2); // Split into max 2 parts
+        
+        $firstName = $nameParts[0];
+        $lastName = isset($nameParts[1]) ? $nameParts[1] : '';
+
+        // Prepare data for registration
+        $registrationData = $request->all();
+        $registrationData['first_name'] = $firstName;
+        $registrationData['last_name'] = $lastName;
+        
+        // Remove full_name from data as it's not needed in the service
+        unset($registrationData['full_name']);
+
+        $result = $this->authService->register($registrationData);
 
         if ($result['success']) {
             return $this->jsonSuccess($result['data'], $result['message'], 201);
