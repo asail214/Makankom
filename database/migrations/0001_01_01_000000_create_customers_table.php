@@ -13,10 +13,24 @@ return new class extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->enum('gender', ['male', 'female', 'other'])->nullable();
+            $table->date('date_of_birth')->nullable();
             $table->string('email')->unique();
+            $table->string('phone')->nullable()->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('profile_picture')->nullable();
+            $table->text('address')->nullable();
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
+            $table->string('country')->nullable();
+            $table->string('postal_code')->nullable();
+            $table->enum('status', ['active', 'inactive', 'suspended', 'pending_verification'])->default('active');
+            $table->dateTime('last_login_at')->nullable();
+            $table->string('preferred_language')->default('en');
+            $table->json('notification_preferences')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

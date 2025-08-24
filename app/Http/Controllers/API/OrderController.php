@@ -11,6 +11,9 @@ use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Exceptions\BusinessLogicException;
+use Illuminate\Validation\ValidationException;
 
 class OrderController extends Controller
 {
@@ -44,12 +47,6 @@ class OrderController extends Controller
                 'items.*.quantity' => ['required', 'integer', 'min:1'],
             ]);
     
-            Log::channel('business_logic')->info('Order creation started', [
-                'customer_id' => $customer->id,
-                'event_id' => $validated['event_id'],
-                'items_count' => count($validated['items'])
-            ]);
-    
             $order = DB::transaction(function () use ($customer, $validated) {
                 $order = new Order([
                     'order_number' => strtoupper(uniqid('ORD')),
@@ -68,15 +65,11 @@ class OrderController extends Controller
                     $ticketType = TicketType::lockForUpdate()->findOrFail($line['ticket_type_id']);
                     
                     if ($ticketType->event_id !== (int) $validated['event_id']) {
-                        throw new BusinessLogicException(
-                            'Ticket type does not belong to the selected event',
-                            'TICKET_TYPE_MISMATCH',
-                            422
-                        );
+                        throw new \Exception('Ticket type does not belong to the selected event');
                     }
                     
                     if (!$ticketType->canPurchase($line['quantity'])) {
-                        throw BusinessLogicException::ticketNotAvailable();
+                        throw new \Exception('Requested tickets are not available');
                     }
                     
                     $ticketType->reserveQuantity($line['quantity']);
@@ -101,26 +94,12 @@ class OrderController extends Controller
                 return $order->fresh(['orderItems.ticketType']);
             });
     
-            Log::channel('business_logic')->info('Order created successfully', [
-                'order_id' => $order->id,
-                'order_number' => $order->order_number,
-                'total_amount' => $order->total_amount
-            ]);
-    
             return $this->jsonSuccess($order, 'Order created', 201);
     
         } catch (ValidationException $e) {
             return $this->validationError($e->errors());
-        } catch (BusinessLogicException $e) {
-            return $e->render();
         } catch (\Exception $e) {
-            Log::channel('api')->error('Order creation failed', [
-                'customer_id' => $customer->id,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            
-            return $this->serverError('Failed to create order');
+            return $this->serverError('Failed to create order: ' . $e->getMessage());
         }
     }
 

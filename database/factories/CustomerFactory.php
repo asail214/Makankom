@@ -6,21 +6,10 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Customer>
- */
 class CustomerFactory extends Factory
 {
-    /**
-     * The current password being used by the factory.
-     */
     protected static ?string $password;
 
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
@@ -29,14 +18,25 @@ class CustomerFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
-            'remember_token' => Str::random(10),
+            'phone' => '+968-' . fake()->numerify('9###-####'),
+            'date_of_birth' => fake()->date('Y-m-d', '2000-01-01'),
+            'gender' => fake()->randomElement(['male', 'female']),
+            'address' => fake()->streetAddress(),
+            'city' => fake()->randomElement(['Muscat', 'Salalah', 'Nizwa', 'Sur', 'Sohar']),
+            'state' => fake()->randomElement(['Muscat Governorate', 'Dhofar Governorate', 'Al Dakhiliyah Governorate']),
+            'country' => 'Oman',
+            'postal_code' => fake()->numerify('###'),
+            'preferred_language' => fake()->randomElement(['en', 'ar']),
             'status' => 'active',
+            'notification_preferences' => [
+                'email_notifications' => fake()->boolean(),
+                'sms_notifications' => fake()->boolean(),
+                'marketing_emails' => fake()->boolean()
+            ],
+            'remember_token' => Str::random(10),
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
     public function unverified(): static
     {
         return $this->state(fn (array $attributes) => [

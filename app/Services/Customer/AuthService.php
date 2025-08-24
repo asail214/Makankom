@@ -19,11 +19,25 @@ class AuthService
     {
         try {
             $customer = Customer::create([
-                'first_name' => $data['first_name'] ?? ($data['name'] ?? 'Customer'),
-                'last_name' => $data['last_name'] ?? '',
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
+                'phone' => $data['phone'] ?? null,
+                'date_of_birth' => $data['date_of_birth'] ?? null,
+                'gender' => $data['gender'] ?? null,
+                'address' => $data['address'] ?? null,
+                'city' => $data['city'] ?? null,
+                'state' => $data['state'] ?? null,
+                'country' => $data['country'] ?? null,
+                'postal_code' => $data['postal_code'] ?? null,
+                'preferred_language' => $data['preferred_language'] ?? 'en',
                 'status' => 'active',
+                'notification_preferences' => [
+                    'email_notifications' => true,
+                    'sms_notifications' => false,
+                    'marketing_emails' => false
+                ]
             ]);
 
             $token = $customer->createToken('customer-token')->plainTextToken;

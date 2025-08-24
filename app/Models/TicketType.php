@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Exceptions\BusinessLogicException;
 
 class TicketType extends Model
 {
@@ -63,7 +64,7 @@ class TicketType extends Model
     public function reserveQuantity(int $quantity): void
     {
         if (!$this->canPurchase($quantity)) {
-            throw new \RuntimeException('Cannot reserve the requested quantity.');
+            throw new \RuntimeException('Cannot reserve the requested quantity');
         }
         $this->increment('quantity_sold', $quantity);
     }
