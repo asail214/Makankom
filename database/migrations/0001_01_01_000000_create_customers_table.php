@@ -26,7 +26,6 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('state')->nullable();
             $table->string('country')->nullable();
-            $table->string('postal_code')->nullable();
             $table->enum('status', ['active', 'inactive', 'suspended', 'pending_verification'])->default('active');
             $table->dateTime('last_login_at')->nullable();
             $table->string('preferred_language')->default('en');

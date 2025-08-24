@@ -30,7 +30,6 @@ class AuthService
                 'city' => $data['city'] ?? null,
                 'state' => $data['state'] ?? null,
                 'country' => $data['country'] ?? null,
-                'postal_code' => $data['postal_code'] ?? null,
                 'preferred_language' => $data['preferred_language'] ?? 'en',
                 'status' => 'active',
                 'notification_preferences' => [
