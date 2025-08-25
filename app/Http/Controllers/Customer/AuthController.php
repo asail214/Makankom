@@ -43,6 +43,8 @@ class AuthController extends Controller
             return $this->validationError($validator->errors());
         }
 
+
+        //--------------------------------------------------------------
         // Split full_name into first_name and last_name
         $fullName = trim($request->full_name);
         $nameParts = explode(' ', $fullName, 2); // Split into max 2 parts
@@ -59,6 +61,7 @@ class AuthController extends Controller
         unset($registrationData['full_name']);
 
         $result = $this->authService->register($registrationData);
+        //--------------------------------------------------------------
 
         if ($result['success']) {
             return $this->jsonSuccess($result['data'], $result['message'], 201);
