@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->string('password'); // password_hash in ERD
+            $table->string('password');
             $table->enum('status', ['active', 'inactive', 'suspended'])->default('active');
             $table->timestamps();
         });

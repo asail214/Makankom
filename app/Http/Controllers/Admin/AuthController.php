@@ -102,7 +102,7 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|string|max:255',
-            'phone' => 'nullable|string|max:20',
+            
         ]);
 
         if ($validator->fails()) {
