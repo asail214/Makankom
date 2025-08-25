@@ -26,9 +26,9 @@ class AuthController extends Controller
     public function create(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'location' => 'nullable|string|max:500',
-            'description' => 'nullable|string|max:1000',
+            'label' => 'required|string|max:255',
+            'event_id' => 'required|integer',
+            'device_information' => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -100,7 +100,7 @@ class AuthController extends Controller
     public function updateProfile(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'sometimes|string|max:255',
+            'label' => 'sometimes|string|max:255',
             'location' => 'nullable|string|max:500',
             'description' => 'nullable|string|max:1000',
         ]);

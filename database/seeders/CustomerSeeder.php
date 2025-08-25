@@ -23,9 +23,7 @@ class CustomerSeeder extends Seeder
                 'address' => '123 Sultan Qaboos Street',
                 'city' => 'Muscat',
                 'state' => 'Muscat Governorate',
-                'country' => 'Oman',
-                'postal_code' => '100',
-                'preferred_language' => 'ar',
+                'country' => 'Oman',                'preferred_language' => 'ar',
                 'status' => 'active',
                 'notification_preferences' => [
                     'email_notifications' => true,
@@ -50,7 +48,6 @@ class CustomerSeeder extends Seeder
                 'city' => 'Muscat',
                 'state' => 'Muscat Governorate',
                 'country' => 'Oman',
-                'postal_code' => '112',
                 'preferred_language' => 'en',
                 'status' => 'active',
                 'notification_preferences' => [

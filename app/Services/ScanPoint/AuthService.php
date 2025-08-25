@@ -18,10 +18,9 @@ class AuthService
     {
         try {
             $scanPoint = ScanPoint::create([
-                'name' => $data['name'],
-                'location' => $data['location'] ?? null,
-                'description' => $data['description'] ?? null,
-                'status' => 'active',
+                'label' => $data['label'],
+                'event_id' => $data['event_id'],
+                'device_information' => $data['device_information'],
             ]);
 
             $token = $scanPoint->createToken('scan-point-token')->plainTextToken;

@@ -14,6 +14,8 @@ class ScanPoint extends Authenticatable
         'label',
         'event_id',
         'device_information',
+        'location',
+        'description',
     ];
 
     protected $hidden = [

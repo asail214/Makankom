@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             OrganizerSeeder::class,
             EventSeeder::class,
             TicketTypeSeeder::class,
+            ScanPointSeeder::class,
         ]);
     }
 }
