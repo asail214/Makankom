@@ -26,7 +26,16 @@ class AuthController extends Controller
     public function register(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'full_name' => 'required|string|max:300',
+            'full_name' => [
+                'required', 'string', 'max:300',
+                function ($attribute, $value, $fail) {
+                    $parts = preg_split('/\s+/', trim((string) $value));
+                    $parts = array_values(array_filter($parts, fn ($p) => $p !== ''));
+                    if (count($parts) === 0 || count($parts) > 2) {
+                        $fail('Write First Name and Last Name');
+                    }
+                },
+            ],
             'email' => 'required|string|email|max:255|unique:customers',
             'password' => 'required|string|min:8|confirmed',
             'phone' => 'nullable|string|max:8|unique:customers',
@@ -46,11 +55,10 @@ class AuthController extends Controller
 
         //--------------------------------------------------------------
         // Split full_name into first_name and last_name
-        $fullName = trim($request->full_name);
-        $nameParts = explode(' ', $fullName, 2); // Split into max 2 parts
-        
-        $firstName = $nameParts[0];
-        $lastName = isset($nameParts[1]) ? $nameParts[1] : '';
+        $parts = preg_split('/\s+/', trim($request->full_name));
+        $parts = array_values(array_filter($parts, fn ($p) => $p !== ''));
+        $firstName = $parts[0];
+        $lastName = count($parts) === 2 ? $parts[1] : null;
 
         // Prepare data for registration
         $registrationData = $request->all();
