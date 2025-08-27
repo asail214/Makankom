@@ -107,6 +107,34 @@ Route::prefix('v1')->group(function () {
     Route::get('/event-categories', [EventController::class, 'categories']);
 });
 
+// Public routes with moderate limiting
+Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
+    Route::get('/events', [EventController::class, 'index']);
+    Route::get('/events/{event}', [EventController::class, 'show']);
+    Route::get('/event-categories', [EventController::class, 'categories']);
+});
+
+// Authentication routes with strict limiting (prevent brute force)
+Route::prefix('admin')->middleware('throttle.strict')->group(function () {
+    Route::post('/register', [AdminAuthController::class, 'register']);
+    Route::post('/login', [AdminAuthController::class, 'login']);
+});
+
+Route::prefix('organizer')->middleware('throttle.strict')->group(function () {
+    Route::post('/register', [OrganizerAuthController::class, 'register']);
+    Route::post('/login', [OrganizerAuthController::class, 'login']);
+});
+
+Route::prefix('customer')->middleware('throttle.strict')->group(function () {
+    Route::post('/register', [CustomerAuthController::class, 'register']);
+    Route::post('/login', [CustomerAuthController::class, 'login']);
+});
+
+Route::prefix('scan-point')->middleware('throttle.strict')->group(function () {
+    Route::post('/create', [ScanPointAuthController::class, 'create']);
+    Route::post('/login', [ScanPointAuthController::class, 'loginWithToken']);
+});
+
 // Organizer routes (protected)
 Route::prefix('organizer')->middleware('auth:organizer')->group(function () {
     Route::resource('events', EventController::class);
@@ -144,4 +172,14 @@ Route::prefix('scan-point')->middleware('auth:scan_point')->group(function () {
     Route::post('/validate', [ScanController::class, 'validateTicket']);
     Route::get('/history', [ScanController::class, 'scanHistory']);
     Route::get('/{event}/stats', [ScanController::class, 'scanStats']);
+});
+
+// Health check route
+Route::get('/health/database', function () {
+    try {
+        DB::connection()->getPdo();
+        return response()->json(['status' => 'connected', 'driver' => DB::connection()->getDriverName()]);
+    } catch (\Exception $e) {
+        return response()->json(['status' => 'failed', 'error' => $e->getMessage()], 500);
+    }
 });

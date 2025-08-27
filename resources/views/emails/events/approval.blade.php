@@ -1,16 +1,25 @@
-@component('mail::message')
+<x-mail::message>
 # Event {{ $approved ? 'Approved' : 'Rejected' }}
 
-Event: {{ $event->title }}
+Hello {{ $event->organizer->name }},
 
 @if($approved)
-Your event has been approved and published.
+Great news! Your event "{{ $event->title }}" has been approved and is now live on our platform.
+
+**Event Details:**
+- **Title:** {{ $event->title }}
+- **Date:** {{ $event->start_date->format('F j, Y \a\t g:i A') }}
+- **Venue:** {{ $event->venue_name }}
+
+<x-mail::button :url="config('app.url') . '/events/' . $event->slug">
+View Your Event
+</x-mail::button>
 @else
-Your event has been rejected. Please review and resubmit.
+Unfortunately, your event "{{ $event->title }}" has been rejected.
+
+Please review our event guidelines and resubmit if needed. You can contact our support team for more information.
 @endif
 
-Thanks,
+Thanks,<br>
 {{ config('app.name') }}
-@endcomponent
-
-
+</x-mail::message>

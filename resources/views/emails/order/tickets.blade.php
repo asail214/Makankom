@@ -1,22 +1,30 @@
-@component('mail::message')
-# Your Tickets
+<x-mail::message>
+# Your Tickets - Order {{ $order->order_number }}
 
-Order Number: {{ $order->order_number }}
+Hello {{ $order->customer->first_name }},
 
-Event: {{ $order->event->title }}
+Your tickets for "{{ $order->event->title }}" are ready!
 
-@component('mail::table')
-| Ticket Number | Type | Status |
-| :-- | :-- | :-- |
+**Event Details:**
+- **Date:** {{ $order->event->start_date->format('F j, Y \a\t g:i A') }}
+- **Venue:** {{ $order->event->venue_name }}
+- **Address:** {{ $order->event->venue_address }}
+
+**Your Tickets:**
 @foreach($order->tickets as $ticket)
-| {{ $ticket->ticket_number }} | {{ $ticket->ticketType->name }} | {{ ucfirst($ticket->status) }} |
+- **Ticket:** {{ $ticket->ticket_number }}
+- **Type:** {{ $ticket->ticketType->name }}
+- **Status:** {{ ucfirst($ticket->status) }}
 @endforeach
-@endcomponent
 
-You can also view your tickets in your account.
+Please save this email and present your QR codes at the venue entrance.
 
-Thanks,
+<x-mail::button :url="config('app.url') . '/tickets'">
+View Digital Tickets
+</x-mail::button>
+
+**Important:** Take screenshots of your tickets as backup in case of connectivity issues at the venue.
+
+Thanks,<br>
 {{ config('app.name') }}
-@endcomponent
-
-
+</x-mail::message>

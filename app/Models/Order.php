@@ -84,7 +84,7 @@ class Order extends Model
             $this->confirmed_at = now();
             $this->save();
         }
-        // Payment assumed to be already created; enforce relation
+        
         if ($payment->order_id !== $this->id) {
             $payment->order()->associate($this);
             $payment->save();
@@ -93,20 +93,8 @@ class Order extends Model
 
     public function generateTickets(): void
     {
-        $this->loadMissing('orderItems.ticketType');
-        foreach ($this->orderItems as $item) {
-            for ($i = 0; $i < $item->quantity; $i++) {
-                Ticket::create([
-                    'ticket_number' => strtoupper(Str::random(12)),
-                    'order_item_id' => $item->id,
-                    'customer_id' => $this->customer_id,
-                    'event_id' => $this->event_id,
-                    'ticket_type_id' => $item->ticket_type_id,
-                    'status' => 'active',
-                    'qr_code' => strtoupper(Str::uuid()->toString()),
-                ]);
-            }
-        }
+        // Queue ticket generation instead of doing it synchronously
+        \App\Jobs\GenerateTicketsJob::dispatch($this);
     }
 }
 

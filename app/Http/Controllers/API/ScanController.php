@@ -51,8 +51,24 @@ class ScanController extends Controller
             return $this->unauthorized();
         }
         $validated = $request->validate([
-            'qr_code' => ['required_without:payload', 'string'],
-            'payload' => ['required_without:qr_code', 'array'],
+            'qr_code' => [
+                'required_without:payload', 
+                'string', 
+                'min:10',
+                'max:255',
+                'regex:/^[a-zA-Z0-9\-_]+$/' // Only alphanumeric, hyphens, underscores
+            ],
+            'payload' => [
+                'required_without:qr_code', 
+                'array',
+                'size:5' // Expect exactly 5 fields: v, t, e, c, ts, sig
+            ],
+            'payload.v' => 'required_with:payload|string|in:v1',
+            'payload.t' => 'required_with:payload|string|min:8|max:20',
+            'payload.e' => 'required_with:payload|integer|min:1',
+            'payload.c' => 'required_with:payload|integer|min:1',
+            'payload.ts' => 'required_with:payload|integer|min:1',
+            'payload.sig' => 'required_with:payload|string|min:32|max:128',
         ]);
         if (isset($validated['payload']) && !$this->qr->verify($validated['payload'])) {
             return $this->validationError(['payload' => ['Invalid signature']]);

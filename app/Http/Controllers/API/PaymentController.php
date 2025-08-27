@@ -64,12 +64,15 @@ class PaymentController extends Controller
         // If gateway payments are enabled, initiate checkout session instead of marking paid
         if (config('payments.enabled')) {
             $session = $this->paymentService->createCheckoutSession($order);
-            // Return checkout session info to frontend; actual marking as paid occurs in webhook
             return $this->jsonSuccess(['checkout' => $session], 'Checkout initiated', 201);
         } else {
             $order->markAsPaid($payment);
+            
+            // Queue order confirmation email
+            \App\Jobs\SendOrderConfirmationEmail::dispatch($order);
+            
+            // Queue ticket generation (which will also queue ticket delivery)
             $order->generateTickets();
-            Mail::to($customer->email)->send(new OrderConfirmation($order->fresh(['orderItems.ticketType','event'])));
         }
 
         return $this->jsonSuccess($payment, 'Payment recorded', 201);

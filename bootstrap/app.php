@@ -12,7 +12,15 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Enable API throttling
+        $middleware->throttleApi();
+        
+        // Custom rate limiting aliases
+        $middleware->alias([
+            'throttle.strict' => \Illuminate\Routing\Middleware\ThrottleRequests::class . ':10,1',
+            'throttle.auth' => \Illuminate\Routing\Middleware\ThrottleRequests::class . ':100,1',
+            'throttle.uploads' => \Illuminate\Routing\Middleware\ThrottleRequests::class . ':5,1',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
