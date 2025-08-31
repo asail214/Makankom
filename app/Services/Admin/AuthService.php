@@ -4,6 +4,7 @@ namespace App\Services\Admin;
 
 use App\Models\Admin;
 use App\Traits\ApiResponse;
+use App\Services\TokenAbilityService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -25,7 +26,8 @@ class AuthService
                 'status' => 'active',
             ]);
 
-            $token = $admin->createToken('admin-token')->plainTextToken;
+            $abilities = TokenAbilityService::getAbilitiesFor('admin');
+            $token = $admin->createToken('admin-token', $abilities)->plainTextToken;
 
             return $this->successResponse([
                 'admin' => $admin,
@@ -52,7 +54,8 @@ class AuthService
                 return $this->errorResponse('Your account is not active.');
             }
 
-            $token = $admin->createToken('admin-token')->plainTextToken;
+            $abilities = TokenAbilityService::getAbilitiesFor('admin');
+            $token = $admin->createToken('admin-token', $abilities)->plainTextToken;
 
             return $this->successResponse([
                 'admin' => $admin,

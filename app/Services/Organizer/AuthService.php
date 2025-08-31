@@ -4,6 +4,7 @@ namespace App\Services\Organizer;
 
 use App\Models\Organizer;
 use App\Traits\ApiResponse;
+use App\Services\TokenAbilityService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -30,7 +31,8 @@ class AuthService
                 'status' => 'pending',
             ]);
 
-            $token = $organizer->createToken('organizer-token')->plainTextToken;
+            $abilities = TokenAbilityService::getAbilitiesFor('organizer');
+            $token = $organizer->createToken('organizer-token', $abilities)->plainTextToken;
 
             return $this->successResponse([
                 'organizer' => $organizer,
@@ -61,7 +63,8 @@ class AuthService
                 return $this->errorResponse('Your account is pending approval.');
             }
 
-            $token = $organizer->createToken('organizer-token')->plainTextToken;
+            $abilities = TokenAbilityService::getAbilitiesFor('organizer');
+            $token = $organizer->createToken('organizer-token', $abilities)->plainTextToken;
 
             return $this->successResponse([
                 'organizer' => $organizer,

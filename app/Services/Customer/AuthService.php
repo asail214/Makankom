@@ -4,6 +4,7 @@ namespace App\Services\Customer;
 
 use App\Models\Customer;
 use App\Traits\ApiResponse;
+use App\Services\TokenAbilityService; 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -39,7 +40,8 @@ class AuthService
                 ]
             ]);
 
-            $token = $customer->createToken('customer-token')->plainTextToken;
+            $abilities = TokenAbilityService::getAbilitiesFor('customer');
+            $token = $customer->createToken('customer-token', $abilities)->plainTextToken;
 
             return $this->successResponse([
                 'customer' => $customer,
@@ -62,7 +64,8 @@ class AuthService
                 return $this->errorResponse('The provided credentials are incorrect.');
             }
 
-            $token = $customer->createToken('customer-token')->plainTextToken;
+            $abilities = TokenAbilityService::getAbilitiesFor('customer');
+            $token = $customer->createToken('customer-token', $abilities)->plainTextToken;
 
             return $this->successResponse([
                 'customer' => $customer,

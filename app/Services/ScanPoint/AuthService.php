@@ -4,6 +4,7 @@ namespace App\Services\ScanPoint;
 
 use App\Models\ScanPoint;
 use App\Traits\ApiResponse;
+use App\Services\TokenAbilityService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
@@ -23,7 +24,8 @@ class AuthService
                 'device_information' => $data['device_information'],
             ]);
 
-            $token = $scanPoint->createToken('scan-point-token')->plainTextToken;
+            $abilities = TokenAbilityService::getAbilitiesFor('scan_point');
+            $token = $scanPoint->createToken('scan-point-token', $abilities)->plainTextToken;
 
             return $this->successResponse([
                 'scan_point' => $scanPoint,
@@ -133,7 +135,8 @@ class AuthService
             $scanPoint->tokens()->delete();
             
             // Generate new token
-            $token = $scanPoint->createToken('scan-point-token')->plainTextToken;
+            $abilities = TokenAbilityService::getAbilitiesFor('scan_point');
+            $token = $scanPoint->createToken('scan-point-token', $abilities)->plainTextToken;
 
             return $this->successResponse([
                 'scan_point' => $scanPoint,

@@ -9,11 +9,29 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('brands', function (Blueprint $table) {
-            // Remove fields not in ERD
-            $table->dropColumn([
-                'slug', 'description', 'website', 'email', 
-                'phone', 'address', 'is_active'
-            ]);
+            // Only drop columns if they exist
+            if (Schema::hasColumn('brands', 'slug')) {
+                $table->dropUnique(['slug']); // Drop unique constraint first
+                $table->dropColumn('slug');
+            }
+            if (Schema::hasColumn('brands', 'description')) {
+                $table->dropColumn('description');
+            }
+            if (Schema::hasColumn('brands', 'website')) {
+                $table->dropColumn('website');
+            }
+            if (Schema::hasColumn('brands', 'email')) {
+                $table->dropColumn('email');
+            }
+            if (Schema::hasColumn('brands', 'phone')) {
+                $table->dropColumn('phone');
+            }
+            if (Schema::hasColumn('brands', 'address')) {
+                $table->dropColumn('address');
+            }
+            if (Schema::hasColumn('brands', 'is_active')) {
+                $table->dropColumn('is_active');
+            }
         });
     }
 
