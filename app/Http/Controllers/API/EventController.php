@@ -64,7 +64,7 @@ class EventController extends Controller
             'brand_id' => ['nullable', 'integer', 'exists:brands,id'],
             'category_id' => ['required', 'integer', 'exists:event_categories,id'],
             'title' => ['required', 'string', 'max:255'],
-            'slug' => ['required', 'string', 'max:255', 'unique:events,slug'],
+            'slug' => ['nullable', 'string', 'max:255', 'unique:events,slug'],
             'description' => ['required', 'string'],
             'short_description' => ['nullable', 'string'],
             'start_date' => ['required', 'date'],
@@ -77,6 +77,31 @@ class EventController extends Controller
             'gallery_images' => ['nullable', 'array'],
             'status' => ['nullable', 'in:draft,published,cancelled,completed'],
         ]);
+
+        // Generate slug if not provided
+        if (empty($validated['slug'])) {
+            $baseSlug = \Illuminate\Support\Str::slug($validated['title']);
+            $slug = $baseSlug;
+            $counter = 1;
+            
+            while (\App\Models\Event::where('slug', $slug)->exists()) {
+                $slug = $baseSlug . '-' . $counter;
+                $counter++;
+            }
+            
+            $validated['slug'] = $slug;
+        }
+
+        // Additional validation: ensure brand belongs to the organizer
+        if ($request->filled('brand_id')) {
+            $brand = \App\Models\Brand::where('id', $request->brand_id)
+                ->where('organizer_id', $organizer->id)
+                ->first();
+            
+            if (!$brand) {
+                return $this->jsonError('The selected brand does not belong to you.', null, 422);
+            }
+        }
 
         $event = new Event($validated);
         $event->organizer_id = $organizer->id;
@@ -98,7 +123,7 @@ class EventController extends Controller
             'brand_id' => ['nullable', 'integer', 'exists:brands,id'],
             'category_id' => ['sometimes', 'integer', 'exists:event_categories,id'],
             'title' => ['sometimes', 'string', 'max:255'],
-            'slug' => ['sometimes', 'string', 'max:255', 'unique:events,slug,'.$event->id],
+            'slug' => ['nullable', 'string', 'max:255', 'unique:events,slug,'.$event->id],
             'description' => ['sometimes', 'string'],
             'short_description' => ['nullable', 'string'],
             'start_date' => ['sometimes', 'date'],
@@ -111,6 +136,31 @@ class EventController extends Controller
             'gallery_images' => ['nullable', 'array'],
             'status' => ['nullable', 'in:draft,published,cancelled,completed'],
         ]);
+
+        // Generate slug if title is updated and slug is not provided
+        if (isset($validated['title']) && empty($validated['slug'])) {
+            $baseSlug = \Illuminate\Support\Str::slug($validated['title']);
+            $slug = $baseSlug;
+            $counter = 1;
+            
+            while (\App\Models\Event::where('slug', $slug)->where('id', '!=', $event->id)->exists()) {
+                $slug = $baseSlug . '-' . $counter;
+                $counter++;
+            }
+            
+            $validated['slug'] = $slug;
+        }
+
+        // Additional validation: ensure brand belongs to the organizer
+        if ($request->filled('brand_id')) {
+            $brand = \App\Models\Brand::where('id', $request->brand_id)
+                ->where('organizer_id', $organizer->id)
+                ->first();
+            
+            if (!$brand) {
+                return $this->jsonError('The selected brand does not belong to you.', null, 422);
+            }
+        }
 
         $event->fill($validated)->save();
         return $this->jsonSuccess($event->fresh(['brand','category']), 'Event updated');

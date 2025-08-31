@@ -30,9 +30,13 @@ public function register(Request $request): JsonResponse
             'email' => 'required|string|email|max:255|unique:organizers',
             'password' => 'required|string|min:8|confirmed',
             'phone' => 'nullable|string|max:20|unique:organizers',
+            'business_name' => 'nullable|string|max:255',
             'type' => 'required|in:individual,company,government,ngo',
             'cr_number' => 'nullable|string|max:50',
+            'business_address' => 'nullable|string|max:500',
+            'business_phone' => 'nullable|string|max:20',
             'profile_img_url' => 'nullable|url',
+            'cr_document_path' => 'nullable|array',
         ]);
 
         if ($validator->fails()) {
@@ -107,9 +111,12 @@ public function register(Request $request): JsonResponse
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|string|max:255',
             'phone' => 'nullable|string|max:20',
-            'business_name' => 'sometimes|string|max:255',
+            'business_name' => 'nullable|string|max:255',
             'business_address' => 'nullable|string|max:500',
             'business_phone' => 'nullable|string|max:20',
+            'cr_number' => 'nullable|string|max:50',
+            'profile_img_url' => 'nullable|url',
+            'cr_document_path' => 'nullable|array',
         ]);
 
         if ($validator->fails()) {

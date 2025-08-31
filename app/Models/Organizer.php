@@ -16,14 +16,18 @@ class Organizer extends Authenticatable
         'email',
         'password',
         'phone',
+        'business_name',
         'type',
-        'profile_img_url',
         'cr_number',
+        'business_address',
+        'business_phone',
+        'profile_img_url',
         'cr_document_path',
         'status',
         'email_verified_at',
         'approved_by',
         'approved_at',
+        'rejection_reason',
     ];
 
     protected $hidden = [

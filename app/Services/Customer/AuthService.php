@@ -61,7 +61,7 @@ class AuthService
             $customer = Customer::where('email', $data['email'])->first();
 
             if (!$customer || !Hash::check($data['password'], $customer->password)) {
-                return $this->errorResponse('The provided credentials are incorrect.');
+                return $this->errorResponse('Email or password is incorrect');
             }
 
             $abilities = TokenAbilityService::getAbilitiesFor('customer');

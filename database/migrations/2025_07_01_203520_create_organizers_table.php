@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->enum('type', ['individual', 'company', 'government', 'ngo'])->default('individual');
             $table->string('profile_img_url')->nullable();
-            $table->string('cr_number')->nullable();
+            //$table->string('cr_number')->nullable();
             $table->string('email')->unique();
             $table->string('phone')->nullable()->unique();
             $table->string('password'); // password_hash in ERD

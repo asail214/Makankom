@@ -24,10 +24,13 @@ class AuthService
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
                 'phone' => $data['phone'] ?? null,
+                'business_name' => $data['business_name'] ?? null,
                 'type' => $data['type'],
-                'profile_img_url' => $data['profile_img_url'] ?? null,
                 'cr_number' => $data['cr_number'] ?? null,
-                'cr_document_path' => null,
+                'business_address' => $data['business_address'] ?? null,
+                'business_phone' => $data['business_phone'] ?? null,
+                'profile_img_url' => $data['profile_img_url'] ?? null,
+                'cr_document_path' => $data['cr_document_path'] ?? null,
                 'status' => 'pending',
             ]);
 
@@ -52,7 +55,7 @@ class AuthService
             $organizer = Organizer::where('email', $data['email'])->first();
 
             if (!$organizer || !Hash::check($data['password'], $organizer->password)) {
-                return $this->errorResponse('The provided credentials are incorrect.');
+                return $this->errorResponse('Email or password is incorrect');
             }
 
             if ($organizer->status === 'inactive') {
