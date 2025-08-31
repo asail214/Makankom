@@ -2,6 +2,21 @@
 
 use Illuminate\Support\Facades\Route;
 
+// welcome route
+Route::get('/', function () {
+    return response()->json([
+        'message' => 'Welcome to Makankom API',
+        'version' => '1.0.0',
+        'status' => 'active',
+        'database' => 'connected',
+        'endpoints' => [
+            'health' => '/api/health/database',
+            'events' => '/api/v1/events',
+            'categories' => '/api/v1/event-categories'
+        ]
+    ]);
+});
+
 Route::get('/email-preview/{type}', function ($type) {
     $event = \App\Models\Event::first();
     if (!$event) {
