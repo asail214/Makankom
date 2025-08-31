@@ -47,7 +47,7 @@ class AuthService
             $admin = Admin::where('email', $data['email'])->first();
 
             if (!$admin || !Hash::check($data['password'], $admin->password)) {
-                return $this->errorResponse('The provided credentials are incorrect.');
+                return $this->errorResponse('Email or password is incorrect');
             }
 
             if ($admin->status !== 'active') {
