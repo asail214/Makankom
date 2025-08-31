@@ -23,36 +23,36 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // Public v1 routes with rate limiting
-Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
+Route::prefix('v1')->middleware('throttle:api')->group(function () {
     Route::get('/events', [EventController::class, 'index']);
     Route::get('/events/{event}', [EventController::class, 'show']);
     Route::get('/event-categories', [EventController::class, 'categories']);
 });
 
 // Authentication routes with strict limiting (prevent brute force)
-Route::prefix('admin')->middleware('throttle:10,1')->group(function () {
+Route::prefix('admin')->middleware('throttle:auth')->group(function () {
     Route::post('/register', [AdminAuthController::class, 'register']);
     Route::post('/login', [AdminAuthController::class, 'login']);
 });
 
-Route::prefix('organizer')->middleware('throttle:10,1')->group(function () {
+Route::prefix('organizer')->middleware('throttle:auth')->group(function () {
     Route::post('/register', [OrganizerAuthController::class, 'register']);
     Route::post('/login', [OrganizerAuthController::class, 'login']);
 });
 
-Route::prefix('customer')->middleware('throttle:10,1')->group(function () {
+Route::prefix('customer')->middleware('throttle:auth')->group(function () {
     Route::post('/register', [CustomerAuthController::class, 'register']);
     Route::post('/login', [CustomerAuthController::class, 'login']);
 });
 
-Route::prefix('scan-point')->middleware('throttle:10,1')->group(function () {
+Route::prefix('scan-point')->middleware('throttle:auth')->group(function () {
     Route::post('/create', [ScanPointAuthController::class, 'create']);
     Route::post('/login', [ScanPointAuthController::class, 'loginWithToken']);
 });
 
 // Admin routes with higher limits for authenticated users
 // Admin profile routes
-Route::prefix('admin')->middleware(['auth:admin', 'ability:admin:profile', 'throttle:100,1'])->group(function () {
+Route::prefix('admin')->middleware(['auth:admin', 'ability:admin:profile', 'throttle:api'])->group(function () {
     Route::post('/logout', [AdminAuthController::class, 'logout']);
     Route::get('/profile', [AdminAuthController::class, 'profile']);
     Route::put('/profile', [AdminAuthController::class, 'updateProfile']);
@@ -60,7 +60,7 @@ Route::prefix('admin')->middleware(['auth:admin', 'ability:admin:profile', 'thro
 });
 
 // Admin event management
-Route::prefix('admin')->middleware(['auth:admin', 'ability:admin:events', 'throttle:100,1'])->group(function () {
+Route::prefix('admin')->middleware(['auth:admin', 'ability:admin:events', 'throttle:api'])->group(function () {
     Route::get('/events', [AdminEventManagementController::class, 'index']);
     Route::get('/events/pending', [AdminEventManagementController::class, 'pending']);
     Route::get('/events/{event}', [AdminEventManagementController::class, 'show']);
@@ -69,7 +69,7 @@ Route::prefix('admin')->middleware(['auth:admin', 'ability:admin:events', 'throt
 });
 
 // Admin organizer management
-Route::prefix('admin')->middleware(['auth:admin', 'ability:admin:organizers', 'throttle:100,1'])->group(function () {
+Route::prefix('admin')->middleware(['auth:admin', 'ability:admin:organizers', 'throttle:api'])->group(function () {
     Route::get('/organizers', [AdminOrganizerManagementController::class, 'index']);
     Route::get('/organizers/{organizer}', [AdminOrganizerManagementController::class, 'show']);
     Route::post('/organizers/{organizer}/verify', [AdminOrganizerManagementController::class, 'verify']);
@@ -77,13 +77,13 @@ Route::prefix('admin')->middleware(['auth:admin', 'ability:admin:organizers', 't
 });
 
 // Admin reports
-Route::prefix('admin')->middleware(['auth:admin', 'ability:admin:reports', 'throttle:100,1'])->group(function () {
+Route::prefix('admin')->middleware(['auth:admin', 'ability:admin:reports', 'throttle:api'])->group(function () {
     Route::get('/reports/sales-summary', [AdminReportsController::class, 'salesSummary']);
     Route::get('/reports/platform-metrics', [AdminReportsController::class, 'platformMetrics']);
 });
 
 // Organizer profile routes
-Route::prefix('organizer')->middleware(['auth:organizer', 'ability:organizer:profile', 'throttle:100,1'])->group(function () {
+Route::prefix('organizer')->middleware(['auth:organizer', 'ability:organizer:profile', 'throttle:api'])->group(function () {
     Route::post('/logout', [OrganizerAuthController::class, 'logout']);
     Route::get('/profile', [OrganizerAuthController::class, 'profile']);
     Route::put('/profile', [OrganizerAuthController::class, 'updateProfile']);
@@ -91,14 +91,14 @@ Route::prefix('organizer')->middleware(['auth:organizer', 'ability:organizer:pro
 });
 
 // Organizer event management routes
-Route::prefix('organizer')->middleware(['auth:organizer', 'ability:organizer:events', 'throttle:100,1'])->group(function () {
+Route::prefix('organizer')->middleware(['auth:organizer', 'ability:organizer:events', 'throttle:api'])->group(function () {
     Route::resource('events', EventController::class);
     Route::post('events/{event}/submit-for-approval', [EventController::class, 'submitForApproval']);
     Route::get('my-events', [EventController::class, 'myEvents']);
 });
 
 // Organizer brand management routes with strict limiting
-Route::prefix('organizer')->middleware(['auth:organizer', 'ability:organizer:brands', 'throttle:5,1'])->group(function () {
+Route::prefix('organizer')->middleware(['auth:organizer', 'ability:organizer:brands', 'throttle:uploads'])->group(function () {
     Route::post('events/{event}/cover', [FileUploadController::class, 'uploadEventCover']);
     Route::post('brands/{brand}/logo', [FileUploadController::class, 'uploadBrandLogo']);
     Route::post('cr/upload', [FileUploadController::class, 'uploadOrganizerCr']);
@@ -106,7 +106,7 @@ Route::prefix('organizer')->middleware(['auth:organizer', 'ability:organizer:bra
 
 // Customer routes with normal auth limits
 // Customer profile routes
-Route::prefix('customer')->middleware(['auth:customer', 'ability:customer:profile', 'throttle:100,1'])->group(function () {
+Route::prefix('customer')->middleware(['auth:customer', 'ability:customer:profile', 'throttle:api'])->group(function () {
     Route::post('/logout', [CustomerAuthController::class, 'logout']);
     Route::get('/profile', [CustomerAuthController::class, 'profile']);
     Route::put('/profile', [CustomerAuthController::class, 'updateProfile']);
@@ -114,7 +114,7 @@ Route::prefix('customer')->middleware(['auth:customer', 'ability:customer:profil
 });
 
 // Customer order routes
-Route::prefix('customer')->middleware(['auth:customer', 'ability:customer:orders', 'throttle:100,1'])->group(function () {
+Route::prefix('customer')->middleware(['auth:customer', 'ability:customer:orders', 'throttle:api'])->group(function () {
     Route::resource('orders', OrderController::class);
     Route::post('orders/{order}/cancel', [OrderController::class, 'cancel']);
     Route::post('orders/{order}/refund', [OrderController::class, 'requestRefund']);
@@ -124,18 +124,18 @@ Route::prefix('customer')->middleware(['auth:customer', 'ability:customer:orders
 });
 
 // Customer ticket routes
-Route::prefix('customer')->middleware(['auth:customer', 'ability:customer:tickets', 'throttle:100,1'])->group(function () {
+Route::prefix('customer')->middleware(['auth:customer', 'ability:customer:tickets', 'throttle:api'])->group(function () {
     Route::get('tickets', [TicketController::class, 'index']);
     Route::get('tickets/{ticket}', [TicketController::class, 'show']);
 });
 
 // Customer wishlist routes
-Route::prefix('customer')->middleware(['auth:customer', 'ability:customer:wishlist', 'throttle:100,1'])->group(function () {
+Route::prefix('customer')->middleware(['auth:customer', 'ability:customer:wishlist', 'throttle:api'])->group(function () {
     Route::resource('wishlist', WishlistController::class);
 });
 
 // Scan Point profile routes
-Route::prefix('scan-point')->middleware(['auth:scan_point', 'ability:scan_point:profile', 'throttle:200,1'])->group(function () {
+Route::prefix('scan-point')->middleware(['auth:scan_point', 'ability:scan_point:profile', 'throttle:scan-point'])->group(function () {
     Route::post('/logout', [ScanPointAuthController::class, 'logout']);
     Route::get('/profile', [ScanPointAuthController::class, 'profile']);
     Route::put('/profile', [ScanPointAuthController::class, 'updateProfile']);
@@ -143,7 +143,7 @@ Route::prefix('scan-point')->middleware(['auth:scan_point', 'ability:scan_point:
 });
 
 // Scan Point scanning routes
-Route::prefix('scan-point')->middleware(['auth:scan_point', 'ability:scan_point:scan', 'throttle:200,1'])->group(function () {
+Route::prefix('scan-point')->middleware(['auth:scan_point', 'ability:scan_point:scan', 'throttle:scan-point'])->group(function () {
     Route::post('/scan', [ScanController::class, 'scanTicket']);
     Route::post('/validate', [ScanController::class, 'validateTicket']);
     Route::get('/history', [ScanController::class, 'scanHistory']);

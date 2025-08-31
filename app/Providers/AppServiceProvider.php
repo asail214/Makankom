@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +22,21 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Configure rate limiters
+        RateLimiter::for('api', function (Request $request) {
+            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        });
+
+        RateLimiter::for('auth', function (Request $request) {
+            return Limit::perMinute(10)->by($request->ip());
+        });
+
+        RateLimiter::for('uploads', function (Request $request) {
+            return Limit::perMinute(5)->by($request->user()?->id ?: $request->ip());
+        });
+
+        RateLimiter::for('scan-point', function (Request $request) {
+            return Limit::perMinute(200)->by($request->user()?->id ?: $request->ip());
+        });
     }
 }
