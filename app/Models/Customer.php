@@ -22,20 +22,9 @@ class Customer extends Authenticatable
         'first_name',
         'last_name',
         'email',
-        'password',
-        'gender',
-        'date_of_birth',
         'phone',
-        'profile_picture',
-        'address',
-        'city',
-        'state',
-        'country',
-        'postal_code',
+        'password',
         'status',
-        'last_login_at',
-        'preferred_language',
-        'notification_preferences',
     ];
 
     /**
