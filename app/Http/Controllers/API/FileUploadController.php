@@ -21,18 +21,37 @@ class FileUploadController extends Controller
 
     public function uploadEventCover(Request $request, Event $event)
     {
-        $organizer = Auth::guard('organizer')->user();
-        if (!$organizer || $event->organizer_id !== $organizer->id) {
-            return $this->forbidden('You can only upload for your own events.');
-        }
-        $validated = $request->validate([
-            'file' => ['required', 'file', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
-        ]);
-        $result = $this->uploader->uploadFile($event, $validated['file'], 'events/'.$event->id, 'event-cover');
-        $event->banner_image = $result['url'];
-        $event->save();
-        return $this->jsonSuccess($result, 'Event cover uploaded');
+public function uploadEventCover(Request $request, Event $event)
+{
+    $organizer = Auth::guard('organizer')->user();
+    if (!$organizer || $event->organizer_id !== $organizer->id) {
+        return $this->forbidden('You can only upload for your own events.');
     }
+    
+    $validated = $request->validate([
+        'file' => [
+            'required', 
+            'file', 
+            'mimes:jpg,jpeg,png,webp', 
+            'max:5120', // 5MB
+            'dimensions:min_width=800,min_height=600,max_width=4000,max_height=3000'
+        ],
+    ]);
+    
+    // Add MIME type verification
+    $file = $validated['file'];
+    $realMimeType = $file->getMimeType();
+    $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+    
+    if (!in_array($realMimeType, $allowedMimes)) {
+        return $this->validationError(['file' => ['Invalid file type detected.']]);
+    }
+    
+    $result = $this->uploader->uploadFile($event, $file, 'events/'.$event->id, 'event-cover');
+    $event->banner_image = $result['url'];
+    $event->save();
+    return $this->jsonSuccess($result, 'Event cover uploaded');
+}
 
     public function uploadOrganizerCr(Request $request)
     {

@@ -102,7 +102,7 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'label' => 'sometimes|string|max:255',
             'location' => 'nullable|string|max:500',
-            'description' => 'nullable|string|max:1000',
+            'device_information' => 'nullable|string|max:1000',
         ]);
 
         if ($validator->fails()) {

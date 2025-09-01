@@ -83,8 +83,9 @@ class Event extends Model
             'approved_at' => now(),
             'status' => 'published',
         ])->save();
-        // Optionally notify organizer via email
-        \Illuminate\Support\Facades\Mail::to($this->organizer->email)->send(new \App\Mail\EventApproval($this, true));
+        
+        // Queue email instead of sending immediately
+        \App\Jobs\SendEventApprovalEmail::dispatch($this, true);
     }
 
     public function reject(Admin $admin, string $reason = null): void
@@ -95,11 +96,13 @@ class Event extends Model
             'approved_at' => null,
             'status' => 'draft',
         ])->save();
-        // Persist reason on related organizer if needed; schema has rejection_reason on organizers
+        
         if ($this->organizer && $reason) {
             $this->organizer->forceFill(['rejection_reason' => $reason])->save();
         }
-        \Illuminate\Support\Facades\Mail::to($this->organizer->email)->send(new \App\Mail\EventApproval($this, false));
+        
+        // Queue email instead of sending immediately
+        \App\Jobs\SendEventApprovalEmail::dispatch($this, false);
     }
 
     public function getTotalTicketsSold(): int

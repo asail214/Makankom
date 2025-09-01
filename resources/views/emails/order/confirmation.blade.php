@@ -1,24 +1,27 @@
-@component('mail::message')
-# Order Confirmation
+<x-mail::message>
+# Order Confirmation - {{ $order->order_number }}
 
-Order Number: {{ $order->order_number }}
+Hello {{ $order->customer->first_name }},
 
-Event: {{ $order->event->title }}
+Thank you for your order! Here are the details:
 
-@component('mail::table')
-| Ticket Type | Qty | Unit Price | Total |
-| :-- | --: | --: | --: |
+**Event:** {{ $order->event->title }}<br>
+**Date:** {{ $order->event->start_date->format('F j, Y \a\t g:i A') }}<br>
+**Venue:** {{ $order->event->venue_name }}
+
+**Order Summary:**
 @foreach($order->orderItems as $item)
-| {{ $item->ticketType->name }} | {{ $item->quantity }} | {{ number_format($item->unit_price, 2) }} | {{ number_format($item->total_price, 2) }} |
+- {{ $item->ticketType->name }} x{{ $item->quantity }} - ${{ number_format($item->total_price, 2) }}
 @endforeach
-@endcomponent
 
-Subtotal: {{ number_format($order->subtotal, 2) }}
+**Total:** ${{ number_format($order->total_amount, 2) }}
 
-Total: {{ number_format($order->total_amount, 2) }}
+Your tickets will be delivered separately via email.
 
-Thanks,
+<x-mail::button :url="config('app.url') . '/orders/' . $order->id">
+View Order Details
+</x-mail::button>
+
+Thanks,<br>
 {{ config('app.name') }}
-@endcomponent
-
-
+</x-mail::message>
