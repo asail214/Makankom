@@ -13,6 +13,7 @@ use App\Http\Controllers\API\TicketController;
 use App\Http\Controllers\API\WishlistController;
 use App\Http\Controllers\API\PaymentController;
 use App\Http\Controllers\API\FileUploadController;
+use App\Http\Controllers\API\BrandController;
 use App\Http\Controllers\Admin\EventManagementController as AdminEventManagementController;
 use App\Http\Controllers\Admin\OrganizerManagementController as AdminOrganizerManagementController;
 use App\Http\Controllers\Admin\ReportsController as AdminReportsController;
@@ -22,11 +23,19 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Public v1 routes with rate limiting
-Route::prefix('v1')->middleware('throttle:api')->group(function () {
+// PUBLIC ROUTES (No authentication required) - Both /api/events and /api/v1/events work
+Route::middleware('throttle:api')->group(function () {
+    // Direct access (without version prefix)
     Route::get('/events', [EventController::class, 'index']);
     Route::get('/events/{event}', [EventController::class, 'show']);
     Route::get('/event-categories', [EventController::class, 'categories']);
+    
+    // Version 1 routes (for API versioning)
+    Route::prefix('v1')->group(function () {
+        Route::get('/events', [EventController::class, 'index']);
+        Route::get('/events/{event}', [EventController::class, 'show']);
+        Route::get('/event-categories', [EventController::class, 'categories']);
+    });
 });
 
 // Authentication routes with strict limiting (prevent brute force)
@@ -46,6 +55,7 @@ Route::prefix('customer')->middleware('throttle:auth')->group(function () {
 });
 
 Route::prefix('scan-point')->middleware('throttle:auth')->group(function () {
+    Route::post('/register', [ScanPointAuthController::class, 'create']); // Added alias
     Route::post('/create', [ScanPointAuthController::class, 'create']);
     Route::post('/login', [ScanPointAuthController::class, 'loginWithToken']);
 });
@@ -104,7 +114,6 @@ Route::prefix('organizer')->middleware(['auth:organizer', 'ability:organizer:bra
     Route::post('cr/upload', [FileUploadController::class, 'uploadOrganizerCr']);
 });
 
-// Customer routes with normal auth limits
 // Customer profile routes
 Route::prefix('customer')->middleware(['auth:customer', 'ability:customer:profile', 'throttle:api'])->group(function () {
     Route::post('/logout', [CustomerAuthController::class, 'logout']);
@@ -156,6 +165,20 @@ Route::post('/payments/webhook/{gateway}', function (\Illuminate\Http\Request $r
     return response()->json(['success' => true]);
 });
 
+// Organizer brand management routes (CRUD operations)
+Route::prefix('organizer')->middleware(['auth:organizer', 'ability:organizer:brands', 'throttle:api'])->group(function () {
+    Route::resource('brands', App\Http\Controllers\API\BrandController::class);
+    Route::get('brands/{brand}/usage', [App\Http\Controllers\API\BrandController::class, 'usage']);
+    Route::get('brands-dropdown', [App\Http\Controllers\API\BrandController::class, 'dropdown']);
+});
+
+// Keep your existing file upload routes
+Route::prefix('organizer')->middleware(['auth:organizer', 'ability:organizer:brands', 'throttle:uploads'])->group(function () {
+    Route::post('events/{event}/cover', [FileUploadController::class, 'uploadEventCover']);
+    Route::post('brands/{brand}/logo', [FileUploadController::class, 'uploadBrandLogo']);
+    Route::post('cr/upload', [FileUploadController::class, 'uploadOrganizerCr']);
+});
+
 // Health check route
 Route::get('/health/database', function () {
     try {
@@ -165,3 +188,4 @@ Route::get('/health/database', function () {
         return response()->json(['status' => 'failed', 'error' => $e->getMessage()], 500);
     }
 });
+

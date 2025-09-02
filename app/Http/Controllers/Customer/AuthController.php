@@ -28,40 +28,26 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'first_name' => 'required|string|max:255',
             'last_name'  => 'required|string|max:255',
-            'email'      =>  'required|string|email|max:255|unique:customers',
+            'email'      => 'required|string|email|max:255|unique:customers',
             'phone'      => 'nullable|string|max:20|unique:customers',
             'password'   => 'required|string|min:8|confirmed',
-            'status'     => 'active', 
         ]);
 
         if ($validator->fails()) {
             return $this->validationError($validator->errors());
         }
 
+        try {
+            $result = $this->authService->register($request->all());
 
-        //--------------------------------------------------------------
-        // Split full_name into first_name and last_name
-        $parts = preg_split('/\s+/', trim($request->full_name));
-        $parts = array_values(array_filter($parts, fn ($p) => $p !== ''));
-        $firstName = $parts[0];
-        $lastName = count($parts) === 2 ? $parts[1] : null;
+            if ($result['success']) {
+                return $this->jsonSuccess($result['data'], $result['message'], 201);
+            }
 
-        // Prepare data for registration
-        $registrationData = $request->all();
-        $registrationData['first_name'] = $firstName;
-        $registrationData['last_name'] = $lastName;
-        
-        // Remove full_name from data as it's not needed in the service
-        unset($registrationData['full_name']);
-
-        $result = $this->authService->register($registrationData);
-        //--------------------------------------------------------------
-
-        if ($result['success']) {
-            return $this->jsonSuccess($result['data'], $result['message'], 201);
+            return $this->jsonError($result['message'], null, 400);
+        } catch (\Exception $e) {
+            return $this->jsonError('Registration failed: ' . $e->getMessage(), null, 500);
         }
-
-        return $this->jsonError($result['message'], null, 400);
     }
 
     /**
@@ -121,7 +107,9 @@ class AuthController extends Controller
     public function updateProfile(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'sometimes|string|max:255',
+            'first_name' => 'sometimes|string|max:255',
+            'last_name' => 'sometimes|string|max:255',
+            'phone' => 'nullable|string|max:20',
         ]);
 
         if ($validator->fails()) {

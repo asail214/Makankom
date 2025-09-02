@@ -25,14 +25,8 @@ class AuthService
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
                 'phone' => $data['phone'] ?? null,
-                'date_of_birth' => $data['date_of_birth'] ?? null,
-                'gender' => $data['gender'] ?? null,
-                'address' => $data['address'] ?? null,
-                'city' => $data['city'] ?? null,
-                'state' => $data['state'] ?? null,
-                'country' => $data['country'] ?? null,
-                'preferred_language' => $data['preferred_language'] ?? 'en',
                 'status' => 'active',
+                'preferred_language' => $data['preferred_language'] ?? 'en',
                 'notification_preferences' => [
                     'email_notifications' => true,
                     'sms_notifications' => false,
@@ -138,7 +132,7 @@ class AuthService
     public function changePassword(array $data): array
     {
         try {
-                        $customer = Auth::guard('customer')->user();
+            $customer = Auth::guard('customer')->user();
             
             if (!$customer) {
                 return $this->errorResponse('Customer not found');
@@ -157,4 +151,4 @@ class AuthService
             return $this->errorResponse('Password change failed: ' . $e->getMessage());
         }
     }
-} 
+}
