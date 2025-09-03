@@ -67,6 +67,29 @@ class AuthController extends Controller
     }
 
     /**
+     * Login scan point using ID and token (as per Postman)
+     */
+    public function login(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'scan_point_id' => 'required|integer',
+            'token' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->validationError($validator->errors());
+        }
+
+        $result = $this->authService->login($request->all());
+
+        if ($result['success']) {
+            return $this->jsonSuccess($result['data'], $result['message']);
+        }
+
+        return $this->jsonError($result['message'], null, 401);
+    }
+
+    /**
      * Logout scan point
      */
     public function logout(): JsonResponse

@@ -53,42 +53,66 @@ class AuthService
     public function loginWithToken(string $token): array
     {
         try {
-            // Split the token to get the ID and the actual token
-            $tokenParts = explode('|', $token);
+            // Find scan point by token
+            $scanPoint = ScanPoint::where('token', $token)
+                ->where('status', 'active')
+                ->first();
             
-            if (count($tokenParts) !== 2) {
-                return $this->errorResponse('Invalid token format provided.');
-            }
-
-            $tokenId = $tokenParts[0];
-            $tokenValue = $tokenParts[1];
-            
-            // Find the token record
-            $personalAccessToken = PersonalAccessToken::find($tokenId);
-            
-            if (!$personalAccessToken) {
-                return $this->errorResponse('Token not found.');
-            }
-            
-            // Verify the token hash
-            if (!hash_equals($personalAccessToken->token, hash('sha256', $tokenValue))) {
-                return $this->errorResponse('Invalid token provided.');
-            }
-            
-            // Get the scan point
-            $scanPoint = $personalAccessToken->tokenable;
-            
-            if (!$scanPoint || !($scanPoint instanceof ScanPoint)) {
-                return $this->errorResponse('Invalid scan point token.');
+            if (!$scanPoint) {
+                return $this->errorResponse('Invalid token or inactive scan point.');
             }
 
             // Load the related event
             $scanPoint->load('event');
+            
+            // Check if event is approved
+            if (!$scanPoint->event || !$scanPoint->event->is_approved) {
+                return $this->errorResponse('Scan point event is not approved.');
+            }
+
+            // Create Sanctum token for API authentication (keep this for API calls)
+            $abilities = TokenAbilityService::getAbilitiesFor('scan_point');
+            $sanctumToken = $scanPoint->createToken('scan-point-token', $abilities)->plainTextToken;
 
             return $this->successResponse([
                 'scan_point' => $scanPoint,
-                'token' => $token,
-                'abilities' => $personalAccessToken->abilities ?? []
+                'token' => $sanctumToken, // This is for API calls
+                'simple_token' => $token,  // This is the original token
+                'abilities' => $abilities
+            ], 'Login successful');
+            
+        } catch (\Exception $e) {
+            return $this->errorResponse('Login failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Login with scan_point_id and token (as per Postman collection)
+     */
+    public function login(array $data): array
+    {
+        try {
+            $scanPoint = ScanPoint::where('id', $data['scan_point_id'])
+                ->where('token', $data['token'])
+                ->where('status', 'active')
+                ->first();
+            
+            if (!$scanPoint) {
+                return $this->errorResponse('Invalid scan point ID or token.');
+            }
+
+            $scanPoint->load('event');
+            
+            if (!$scanPoint->event || !$scanPoint->event->is_approved) {
+                return $this->errorResponse('Scan point event is not approved.');
+            }
+
+            $abilities = TokenAbilityService::getAbilitiesFor('scan_point');
+            $sanctumToken = $scanPoint->createToken('scan-point-token', $abilities)->plainTextToken;
+
+            return $this->successResponse([
+                'scan_point' => $scanPoint,
+                'token' => $sanctumToken,
             ], 'Login successful');
             
         } catch (\Exception $e) {

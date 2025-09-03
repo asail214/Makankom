@@ -17,12 +17,11 @@ class CustomerSeeder extends Seeder
                 'last_name' => 'Al-Rashid',
                 'email' => 'customer@example.com',
                 'phone' => '+968-9123-4567',
-                'password' => Hash::make('password'),               'preferred_language' => 'ar',
+                'password' => Hash::make('password'),
                 'status' => 'active',
             ]
         );
 
-        // Add another test customer
         Customer::updateOrCreate(
             ['email' => 'sara@example.com'],
             [

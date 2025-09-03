@@ -54,6 +54,22 @@ class Ticket extends Model
 
     public function canBeScan(): bool
     {
+        // If ticket is cancelled or refunded, cannot scan
+        if (in_array($this->status, ['cancelled', 'refunded'])) {
+            return false;
+        }
+        
+        // Check if ticket type allows re-entry
+        $ticketType = $this->ticketType;
+        
+        // If ticket allows re-entry, it can always be scanned (even if used before)
+        if ($ticketType && $ticketType->benefits && 
+            is_array($ticketType->benefits) && 
+            in_array('re-entry', $ticketType->benefits)) {
+            return true;
+        }
+        
+        // For regular tickets, can only scan if not used
         return $this->status === 'active';
     }
 
@@ -61,6 +77,11 @@ class Ticket extends Model
     {
         if (!$this->canBeScan()) {
             throw new \RuntimeException('Ticket cannot be scanned.');
+        }
+
+        // Check if scan point can scan
+        if (!$scanPoint->canScan()) {
+            throw new \RuntimeException('Scan point is not authorized to scan tickets.');
         }
 
         $scan = TicketScan::create([
@@ -74,11 +95,20 @@ class Ticket extends Model
             'notes' => $notes,
         ]);
 
-        $this->forceFill([
-            'status' => 'used',
-            'used_at' => $scan->scanned_at,
-            'used_by_scan_point' => $scanPoint->id,
-        ])->save();
+        // Only mark as used if it's not a re-entry ticket
+        $ticketType = $this->ticketType;
+        $allowsReentry = $ticketType && 
+                        $ticketType->benefits && 
+                        is_array($ticketType->benefits) && 
+                        in_array('re-entry', $ticketType->benefits);
+
+        if (!$allowsReentry && $this->status === 'active') {
+            $this->forceFill([
+                'status' => 'used',
+                'used_at' => $scan->scanned_at,
+                'used_by_scan_point' => $scanPoint->id,
+            ])->save();
+        }
 
         return $scan;
     }

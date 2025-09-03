@@ -55,9 +55,10 @@ Route::prefix('customer')->middleware('throttle:auth')->group(function () {
 });
 
 Route::prefix('scan-point')->middleware('throttle:auth')->group(function () {
-    Route::post('/register', [ScanPointAuthController::class, 'create']); // Added alias
+    Route::post('/register', [ScanPointAuthController::class, 'create']);
     Route::post('/create', [ScanPointAuthController::class, 'create']);
-    Route::post('/login', [ScanPointAuthController::class, 'loginWithToken']);
+    Route::post('/login', [ScanPointAuthController::class, 'login']); // Add this new method
+    Route::post('/login-with-token', [ScanPointAuthController::class, 'loginWithToken']); // Keep old method
 });
 
 // Admin routes with higher limits for authenticated users
