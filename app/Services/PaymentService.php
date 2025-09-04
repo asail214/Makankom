@@ -16,9 +16,17 @@ class PaymentService
 
     public function __construct(?PaymentGatewayInterface $gateway = null)
     {
-        $this->enabled = (bool) Config::get('payments.enabled', true);
+        $this->enabled = (bool) Config::get('payments.enabled', false); // Set to false by default
         $this->defaultGatewayName = (string) Config::get('payments.default_gateway', 'thawani');
-        $this->gateway = $gateway ?? $this->makeGateway($this->defaultGatewayName);
+        // $this->gateway = $gateway ?? $this->makeGateway($this->defaultGatewayName);
+
+        // Only initialize gateway if payments are enabled
+        if ($this->enabled && $gateway === null) {
+            $this->gateway = $this->makeGateway($this->defaultGatewayName);
+        } elseif ($gateway !== null) {
+            $this->gateway = $gateway;
+        }
+        // If payments disabled, don't set $this->gateway at all
     }
 
     protected function makeGateway(string $name): PaymentGatewayInterface

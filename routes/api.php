@@ -106,6 +106,10 @@ Route::prefix('organizer')->middleware(['auth:organizer', 'ability:organizer:eve
     Route::resource('events', EventController::class);
     Route::post('events/{event}/submit-for-approval', [EventController::class, 'submitForApproval']);
     Route::get('my-events', [EventController::class, 'myEvents']);
+    Route::get('events/{eventId}/scan-points', [App\Http\Controllers\ScanPoint\AuthController::class, 'index']); // List scan points for an event
+    Route::delete('scan-points/{scanPointId}', [App\Http\Controllers\ScanPoint\AuthController::class, 'destroy']); // Delete scan point
+    Route::post('scan-points/{scanPointId}/deactivate', [App\Http\Controllers\ScanPoint\AuthController::class, 'deactivate']); // Deactivate instead of delete
+
 });
 
 // Organizer brand management routes with strict limiting

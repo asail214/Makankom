@@ -36,11 +36,13 @@ class AuthService
             ]);
 
             $abilities = TokenAbilityService::getAbilitiesFor('scan_point');
-            $token = $scanPoint->createToken('scan-point-token', $abilities)->plainTextToken;
+            $sanctumToken = $scanPoint->createToken('scan-point-token', $abilities)->plainTextToken;
 
             return $this->successResponse([
                 'scan_point' => $scanPoint->load('event'),
-                'token' => $token,
+                'simple_token' => $scanPoint->token,  // Add the simple token (SP_...)
+                'sanctum_token' => $sanctumToken,     // The API token for subsequent calls
+                'token' => $sanctumToken              // Keep this for backward compatibility
             ], 'Scan point created successfully');
         } catch (\Exception $e) {
             return $this->errorResponse('Creation failed: ' . $e->getMessage());
@@ -205,4 +207,63 @@ class AuthService
             return $this->errorResponse('Token generation failed: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Delete a scan point
+     */
+    public function destroy(int $scanPointId): array
+    {
+        try {
+            $scanPoint = ScanPoint::with('event')->find($scanPointId);
+            
+            if (!$scanPoint) {
+                return $this->errorResponse('Scan point not found');
+            }
+
+            // Check if the authenticated user is the organizer of the event
+            $organizer = Auth::guard('organizer')->user();
+            if (!$organizer || $scanPoint->event->organizer_id !== $organizer->id) {
+                return $this->errorResponse('Unauthorized. You can only delete scan points for your own events.');
+            }
+
+            // Check if scan point has any scans - prevent deletion if it has scan history
+            $scanCount = $scanPoint->ticketScans()->count();
+            if ($scanCount > 0) {
+                return $this->errorResponse("Cannot delete scan point with {$scanCount} scan records. Deactivate instead.");
+            }
+
+            $scanPoint->delete();
+
+            return $this->successResponse(null, 'Scan point deleted successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Deletion failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Deactivate a scan point (safer alternative to deletion)
+     */
+    public function deactivate(int $scanPointId): array
+    {
+        try {
+            $scanPoint = ScanPoint::with('event')->find($scanPointId);
+            
+            if (!$scanPoint) {
+                return $this->errorResponse('Scan point not found');
+            }
+
+            $organizer = Auth::guard('organizer')->user();
+            if (!$organizer || $scanPoint->event->organizer_id !== $organizer->id) {
+                return $this->errorResponse('Unauthorized. You can only manage scan points for your own events.');
+            }
+
+            $scanPoint->status = 'inactive';
+            $scanPoint->save();
+
+            return $this->successResponse($scanPoint->fresh(['event']), 'Scan point deactivated successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse('Deactivation failed: ' . $e->getMessage());
+        }
+    }
 }
+
