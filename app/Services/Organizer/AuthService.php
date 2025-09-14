@@ -21,16 +21,10 @@ class AuthService
         try {
             $organizer = Organizer::create([
                 'name' => $data['name'],
-                'email' => $data['email'],
-                'password' => Hash::make($data['password']),
-                'phone' => $data['phone'] ?? null,
-                'business_name' => $data['business_name'] ?? null,
                 'type' => $data['type'],
-                'cr_number' => $data['cr_number'] ?? null,
-                'business_address' => $data['business_address'] ?? null,
-                'business_phone' => $data['business_phone'] ?? null,
-                'profile_img_url' => $data['profile_img_url'] ?? null,
-                'cr_document_path' => $data['cr_document_path'] ?? null,
+                'email' => $data['email'],
+                'phone' => $data['phone'] ?? null,
+                'password' => Hash::make($data['password']),
                 'status' => 'pending',
             ]);
 

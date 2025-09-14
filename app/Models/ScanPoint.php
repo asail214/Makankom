@@ -22,7 +22,7 @@ class ScanPoint extends Authenticatable
 
     protected $hidden = [
         'remember_token',
-        'token'
+        //'token'
     ];
 
     protected $casts = [

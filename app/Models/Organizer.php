@@ -13,21 +13,13 @@ class Organizer extends Authenticatable
 
     protected $fillable = [
         'name',
-        'email',
-        'password',
-        'phone',
-        'business_name',
         'type',
-        'cr_number',
-        'business_address',
-        'business_phone',
+        'email',
+        'phone',
+        'password',
         'profile_img_url',
         'cr_document_path',
         'status',
-        'email_verified_at',
-        'approved_by',
-        'approved_at',
-        'rejection_reason',
     ];
 
     protected $hidden = [
